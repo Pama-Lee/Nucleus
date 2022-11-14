@@ -2,6 +2,7 @@ package cn.devspace.nucleus.Manager;
 
 
 import cn.devspace.nucleus.Message.Log;
+import cn.devspace.nucleus.Server.Server;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,6 +31,11 @@ public class RouteManager extends ManagerBase {
 
     public Map<String, ArrayList<String>> getRouteMap() {
         return ALLOW_ROUTE;
+    }
+
+    public static void registerRouter(String routeName ,Class<?> classes){
+        Map<String, String> maps = AnnotationManager.getRouterAnnotation(classes);
+        Server.RouterList.put(routeName, maps);
     }
 
     public String getLanguage() {

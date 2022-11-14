@@ -4,9 +4,7 @@ import cn.devspace.nucleus.Lang.LangBase;
 import com.google.gson.Gson;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,6 +40,13 @@ public class ManagerBase extends LangBase {
         return Map;
     }
 
+    public static Map<String, String> getSingeYaml(InputStream inputStream) {
+        Yaml yaml = new Yaml();
+        BufferedReader bf = null;
+        bf = new BufferedReader(new InputStreamReader(inputStream));
+        Map<String, String> Map = yaml.loadAs(bf, Map.class);
+        return Map;
+    }
     public static Map<String, ArrayList<String>> getSingeYaml(String Path, boolean ArrayList) {
         Yaml yaml = new Yaml();
         BufferedReader bf = null;

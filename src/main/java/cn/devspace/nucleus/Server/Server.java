@@ -7,7 +7,9 @@ import cn.devspace.nucleus.Manager.ManagerBase;
 import cn.devspace.nucleus.Manager.SettingManager;
 import cn.devspace.nucleus.Message.Log;
 import cn.devspace.nucleus.Plugin.AppBase;
+import cn.devspace.nucleus.Plugin.AppLoader;
 import cn.devspace.nucleus.Plugin.PluginBase;
+import cn.devspace.nucleus.Plugin.PluginLoader;
 import org.springframework.core.io.ClassPathResource;
 
 import java.io.File;
@@ -83,6 +85,7 @@ public class Server extends ManagerBase {
 
 
     public void Start() {
+        this.preDIR();
         //服务器开启
 
         //处理语言
@@ -91,11 +94,16 @@ public class Server extends ManagerBase {
         Log.sendLog(TranslateOne("App.Version", getServerVersion()));
         Log.sendLog(TranslateOne("App.Licence"));
 
-        AppBase.loadApps(this);
+        AppLoader.loadApps(this);
+
+        PluginLoader pL = new PluginLoader(this,null);
+        pL.getPlugins();
+
 
         Log.sendLog(TranslateOne("App.Run.UseMemory", getUsedMemory()));
         enableApp();
-        ConsoleManager con = new ConsoleManager();
+        //ConsoleManager con = new ConsoleManager();
+        Log.sendLog(CommandMap.toString());
     }
 
     private void enableApp() {
@@ -112,6 +120,13 @@ public class Server extends ManagerBase {
         }
     }
 
+
+    public void preDIR(){
+        //检查插件目录
+        if (!new File(RunPath+"plugins/").exists()){
+            new File(RunPath+"plugins/").mkdir();
+        }
+    }
 
     public static <T> boolean isStartupFromJar(Class<T> clazz) {
         File file = new File(clazz.getProtectionDomain().getCodeSource().getLocation().getPath());
