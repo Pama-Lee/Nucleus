@@ -1,0 +1,9 @@
+##
+##LangList: chs:中文
+##          en: English
+##
+app.language: chs
+EnableApp:
+  - Login
+  - Register
+  - whyni
