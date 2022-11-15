@@ -27,7 +27,8 @@ public class NucleusApplication {
         //init
         WebServer webServer = new WebServer(args);
         webServer.run();
-        Server.Enabled();
+        Server.EnabledApp();
+        Server.EnabledPlugin();
         Log.sendLog("测试");
 
     }

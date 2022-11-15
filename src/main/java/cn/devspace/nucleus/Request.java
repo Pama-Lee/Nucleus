@@ -1,6 +1,8 @@
 package cn.devspace.nucleus;
 
 import cn.devspace.nucleus.Message.Log;
+import cn.devspace.nucleus.Plugin.AppBase;
+import cn.devspace.nucleus.Plugin.PluginBase;
 import cn.devspace.nucleus.Server.Server;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,29 +19,43 @@ import java.util.Set;
 public class Request extends HttpServlet {
     @GetMapping("**")
     public String Router(HttpServletRequest request) {
-        Map<String, Map<String, String>> router = Server.RouterList;
+        Map<String, Map<String, Class<?>>> router = Server.RouterList;
         Set<String> map = router.keySet();
         for (String app : map) {
             for (String method : router.get(app).keySet()) {
-                Map<String, String> AppRouters = router.get(app);
+                Map<String, Class<?>> AppRouters = router.get(app);
                 String ReqURI = request.getRequestURI();
-                if (ReqURI.equals("/" + app + "/" + AppRouters.get(method))) {
+                if (ReqURI.equals("/" + app + "/" + method)) {
                     try {
-                        Method methods = Server.AppList.get(app).getClass().getMethod(method);
-                        Object doMethod = Server.AppList.get(app);
-                        Object m = methods.invoke(doMethod);
-                        if (m != null) {
-                            return m.toString();
-                        } else {
-                            return null;
+                        AppBase ab = Server.AppList.get(app);
+                        String pb = Server.PluginRoute.get(app);
+                        if (ab != null){
+                            return toRoute(method, AppRouters);
                         }
-                    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                        if (pb != null){
+                            app = Server.PluginRoute.get(app);
+                            return toRoute(method, AppRouters);
+                        }
+                    } catch (IllegalAccessException | InvocationTargetException e) {
                         Log.sendWarn(e.toString());
+                    } catch (NoSuchMethodException | InstantiationException e) {
+                        throw new RuntimeException(e);
                     }
                 }
             }
         }
         return "404";
+    }
+
+    private String toRoute(String method, Map<String, Class<?>> appRouters) throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+        Method methods = appRouters.get(method).getMethod(method);
+        Object doMethod = appRouters.get(method).getConstructor().newInstance();
+        Object m = methods.invoke(doMethod);
+        if (m != null) {
+            return m.toString();
+        } else {
+            return null;
+        }
     }
 
 /*

@@ -7,7 +7,9 @@ import cn.devspace.nucleus.Manager.ManagerBase;
 import cn.devspace.nucleus.Manager.SettingManager;
 import cn.devspace.nucleus.Message.Log;
 import cn.devspace.nucleus.Plugin.AppBase;
+import cn.devspace.nucleus.Plugin.AppLoader;
 import cn.devspace.nucleus.Plugin.PluginBase;
+import cn.devspace.nucleus.Plugin.PluginLoader;
 import org.springframework.core.io.ClassPathResource;
 
 import java.io.File;
@@ -44,9 +46,9 @@ public class Server extends ManagerBase {
 
 
     public static Map<String, AppBase> AppList = new HashMap<>();
-    public static Map<String, AppBase> AppClass = new HashMap<>();
-    public static Map<String, Map<String, String>> RouterList = new HashMap<>();
-
+    public static Map<String, PluginBase> PluginList = new HashMap<>();
+    public static Map<String, Map<String, Class<?>>> RouterList = new HashMap<>();
+    public static Map<String,String> PluginRoute = new HashMap<>();
     public static Map<String, Map<CommandBase, Method>> CommandMap = new HashMap<>();
 
 
@@ -83,6 +85,7 @@ public class Server extends ManagerBase {
 
 
     public void Start() {
+        this.preDIR();
         //服务器开启
 
         //处理语言
@@ -91,27 +94,63 @@ public class Server extends ManagerBase {
         Log.sendLog(TranslateOne("App.Version", getServerVersion()));
         Log.sendLog(TranslateOne("App.Licence"));
 
-        AppBase.loadApps(this);
+        PluginLoader pL = new PluginLoader(this,null);
+        PluginList = pL.getPlugins();
+
+        AppLoader.loadApps(this);
+        LoadPlugin();
+
+
 
         Log.sendLog(TranslateOne("App.Run.UseMemory", getUsedMemory()));
-        enableApp();
-        ConsoleManager con = new ConsoleManager();
+        EnableApp();
+        EnablePlugin();
+        //ConsoleManager con = new ConsoleManager();
+        Log.sendLog(CommandMap.toString());
     }
 
-    private void enableApp() {
+    private void EnableApp() {
         for (String app : this.AppList.keySet()) {
             AppBase appClass = this.AppList.get(app);
             appClass.onEnable();
         }
     }
 
-    public static void Enabled(){
+    public static void EnabledApp(){
         for (String app : AppList.keySet()) {
             AppBase appClass = AppList.get(app);
             appClass.onEnabled();
         }
     }
 
+    public static void LoadPlugin(){
+        for (String plugin:PluginList.keySet()){
+            PluginBase pluginBase = PluginList.get(plugin);
+            pluginBase.onLoad();
+        }
+    }
+
+    public static void EnablePlugin(){
+        for (String plugin:PluginList.keySet()){
+            PluginBase pluginBase = PluginList.get(plugin);
+            pluginBase.onEnable();
+        }
+    }
+    public static void EnabledPlugin(){
+        for (String plugin:PluginList.keySet()){
+            PluginBase pluginBase = PluginList.get(plugin);
+            pluginBase.onEnabled();
+        }
+    }
+
+
+
+    public void preDIR(){
+        //检查插件目录
+        if (!new File(RunPath+"plugins/").exists()){
+            new File(RunPath+"plugins/").mkdir();
+        }
+    }
 
     public static <T> boolean isStartupFromJar(Class<T> clazz) {
         File file = new File(clazz.getProtectionDomain().getCodeSource().getLocation().getPath());
