@@ -7,6 +7,7 @@ import org.springframework.core.io.ClassPathResource;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -41,6 +42,11 @@ public class AppLoader implements Loader {
         return description;
     }
 
+    @Override
+    public String getName() {
+        return AppName;
+    }
+
     public static void loadApps(Server server) {
         try {
             Map<String, ArrayList<String>> Maps = getSingeYaml(RunPath + "/resources/nucleus.yml", true);
@@ -52,7 +58,7 @@ public class AppLoader implements Loader {
                     String main = appDes.getMain();
                     Class<?> c = Class.forName(main);
                     AppBase app = (AppBase) c.getDeclaredConstructor().newInstance();
-                    Map<String, String> maps = AnnotationManager.getRouterAnnotation(c);
+                    Map<String, Class<?>> maps = AnnotationManager.getRouterAnnotation(c);
                     Server.RouterList.put(apps, maps);
                     app.setDescription(appDes);
                     Log.AppStart(Server.getInstance().Translators("App.Start", apps));

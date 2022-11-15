@@ -8,6 +8,7 @@ import org.springframework.core.io.ClassPathResource;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -24,7 +25,7 @@ public class PluginLoader implements Loader{
 
     protected static String getPlugin;
 
-    protected String AppName;
+    protected String PluginName;
 
     public PluginLoader(Server server, String AppName) {
        // this.AppName = AppName;
@@ -34,7 +35,7 @@ public class PluginLoader implements Loader{
 
     public Description loadDescription() {
         try {
-            return new Description(new ClassPathResource("app/" + this.AppName + "/app.yml").getInputStream());
+            return new Description(new ClassPathResource("app/" + this.PluginName + "/app.yml").getInputStream());
         } catch (IOException ioe) {
             Log.sendError(ioe.toString(), 2);
             return null;
@@ -98,10 +99,10 @@ public class PluginLoader implements Loader{
                             Class loadClass = pcl.loadClass(mainClass);
                             Class<PluginBase> pluginClass = (Class<PluginBase>) loadClass.asSubclass(PluginBase.class);
                             PluginBase plugin = pluginClass.getConstructor().newInstance();
-                            res.put(s.replace(".jar", ""), plugin);
-
-                            plugin.onLoad();
-
+                            plugin.setDescription(description);
+                            plugin.PluginName = description.getName();
+                            res.put(description.getName(), plugin);
+                           // plugin.onLoad();
                         } catch (IOException e) {
                             Log.sendWarn(Server.getInstance().TranslateOne("Plugin.JarCanNotOpen",s));
                         } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException |
@@ -123,6 +124,11 @@ public class PluginLoader implements Loader{
         return description;
     }
 
+    @Override
+    public String getName() {
+        return PluginName;
+    }
+
     public static void loadPlugins(Server server) {
         try {
             Map<String, ArrayList<String>> Maps = getSingeYaml(RunPath + "/resources/nucleus.yml", true);
@@ -134,7 +140,7 @@ public class PluginLoader implements Loader{
                     String main = appDes.getMain();
                     Class<?> c = Class.forName(main);
                     AppBase app = (AppBase) c.getDeclaredConstructor().newInstance();
-                    Map<String, String> maps = AnnotationManager.getRouterAnnotation(c);
+                    Map<String, Class<?>> maps = AnnotationManager.getRouterAnnotation(c);
                     Server.RouterList.put(apps, maps);
                     app.setDescription(appDes);
                     Log.AppStart(Server.getInstance().Translators("App.Start", apps));

@@ -46,9 +46,9 @@ public class Server extends ManagerBase {
 
 
     public static Map<String, AppBase> AppList = new HashMap<>();
-    public static Map<String, AppBase> AppClass = new HashMap<>();
-    public static Map<String, Map<String, String>> RouterList = new HashMap<>();
-
+    public static Map<String, PluginBase> PluginList = new HashMap<>();
+    public static Map<String, Map<String, Class<?>>> RouterList = new HashMap<>();
+    public static Map<String,String> PluginRoute = new HashMap<>();
     public static Map<String, Map<CommandBase, Method>> CommandMap = new HashMap<>();
 
 
@@ -94,31 +94,55 @@ public class Server extends ManagerBase {
         Log.sendLog(TranslateOne("App.Version", getServerVersion()));
         Log.sendLog(TranslateOne("App.Licence"));
 
-        AppLoader.loadApps(this);
-
         PluginLoader pL = new PluginLoader(this,null);
-        pL.getPlugins();
+        PluginList = pL.getPlugins();
+
+        AppLoader.loadApps(this);
+        LoadPlugin();
+
 
 
         Log.sendLog(TranslateOne("App.Run.UseMemory", getUsedMemory()));
-        enableApp();
+        EnableApp();
+        EnablePlugin();
         //ConsoleManager con = new ConsoleManager();
         Log.sendLog(CommandMap.toString());
     }
 
-    private void enableApp() {
+    private void EnableApp() {
         for (String app : this.AppList.keySet()) {
             AppBase appClass = this.AppList.get(app);
             appClass.onEnable();
         }
     }
 
-    public static void Enabled(){
+    public static void EnabledApp(){
         for (String app : AppList.keySet()) {
             AppBase appClass = AppList.get(app);
             appClass.onEnabled();
         }
     }
+
+    public static void LoadPlugin(){
+        for (String plugin:PluginList.keySet()){
+            PluginBase pluginBase = PluginList.get(plugin);
+            pluginBase.onLoad();
+        }
+    }
+
+    public static void EnablePlugin(){
+        for (String plugin:PluginList.keySet()){
+            PluginBase pluginBase = PluginList.get(plugin);
+            pluginBase.onEnable();
+        }
+    }
+    public static void EnabledPlugin(){
+        for (String plugin:PluginList.keySet()){
+            PluginBase pluginBase = PluginList.get(plugin);
+            pluginBase.onEnabled();
+        }
+    }
+
 
 
     public void preDIR(){

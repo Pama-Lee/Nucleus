@@ -8,20 +8,18 @@ import cn.devspace.nucleus.Message.Log;
 import cn.devspace.nucleus.Server.Server;
 import org.springframework.core.io.ClassPathResource;
 
-import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.lang.reflect.Method;
 import java.util.Map;
 
-import static cn.devspace.nucleus.Server.Server.RunPath;
-
-abstract public class PluginBase extends ManagerBase {
+abstract public class PluginBase extends ManagerBase implements Loader {
         protected String callback = null;
         protected static String LoadingApp = null;
         protected static LangBase AppLang = null;
+
         protected Description description;
 
-        protected String AppName;
+        protected String PluginName;
 
         public PluginBase() {
 
@@ -44,8 +42,13 @@ abstract public class PluginBase extends ManagerBase {
         }
 
         protected void initRoute(Class<?> classes){
-            Map<String, String> maps = AnnotationManager.getRouterAnnotation(classes);
-            Server.RouterList.put(AppName, maps);
+            Log.sendLog(getDescription().getRoute());
+            Log.sendLog(PluginName);
+            Map<String, Class<?>> maps = AnnotationManager.getRouterAnnotation(classes);
+
+            Server.RouterList.put(getDescription().getRoute(), maps);
+            Server.PluginRoute.put(getDescription().getRoute(),PluginName);
+            Log.sendLog(Server.RouterList.toString());
         }
 
         public String onCall(String route, String method) {
@@ -75,7 +78,7 @@ abstract public class PluginBase extends ManagerBase {
         protected LangBase loadLanguage() {
             String language = getLanguage();
             try {
-                InputStream langStream = new ClassPathResource("app/" + this.AppName + "/Language/" + language + ".ini").getInputStream();
+                InputStream langStream = new ClassPathResource("app/" + this.PluginName + "/Language/" + language + ".ini").getInputStream();
                 LangBase lb = new LangBase(langStream);
                 AppLang = lb;
                 return lb;
@@ -95,6 +98,8 @@ abstract public class PluginBase extends ManagerBase {
             return description;
         }
 
+
+
         protected String Translation(String key, Object... params) {
             return TranslateOne(key, params);
         }
@@ -103,12 +108,12 @@ abstract public class PluginBase extends ManagerBase {
             return TranslateOne(key, param);
         }
 
-        public void localApp(String AppName) {
-            this.AppName = AppName;
+        public void localPlugin(String PluginName) {
+            this.PluginName = PluginName;
         }
 
-        protected String getLocalApp() {
-            return this.AppName;
+        protected String getLocalPlugin() {
+            return this.PluginName;
         }
 
         //TODO: 卸载APP，等待完善
