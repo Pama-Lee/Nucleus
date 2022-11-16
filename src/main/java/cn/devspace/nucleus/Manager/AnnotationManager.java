@@ -13,13 +13,16 @@ import java.util.Map;
  */
 public class AnnotationManager {
 
-    public static Map<String, Class<?>> getRouterAnnotation(Class<?> classes) {
+    public static Map<Map<String, String>, Class<?>> getRouterAnnotation(Class<?> classes) {
         Method[] methods = classes.getMethods();
-        Map<String, Class<?>> res = new HashMap<>();
+        Map<Map<String, String>, Class<?>> res = new HashMap<>();
         for (Method method : methods) {
             Router router = method.getAnnotation(Router.class);
             if (router != null) {
-                res.put(router.value(), classes);
+                Map<String, String> rel = new HashMap<>();
+                rel.put("M", method.getName());
+                rel.put("R", router.value());
+                res.put(rel, classes);
             }
         }
         return res;

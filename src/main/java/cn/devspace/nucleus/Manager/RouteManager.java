@@ -5,8 +5,6 @@ import cn.devspace.nucleus.Message.Log;
 import cn.devspace.nucleus.Plugin.Loader;
 import cn.devspace.nucleus.Server.Server;
 
-import javax.print.attribute.standard.Media;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,8 +35,8 @@ public class RouteManager extends ManagerBase {
     }
 
 
-    public static void registerRouter(Loader loader,String routeName , Class<?> classes){
-        Map<String, Class<?>> maps = AnnotationManager.getRouterAnnotation(classes);
+    public static void registerRouter(Loader loader, String routeName, Class<Router> classes) {
+        Map<Map<String, String>, Class<?>> maps = AnnotationManager.getRouterAnnotation(classes);
         Server.RouterList.put(routeName, maps);
     }
 

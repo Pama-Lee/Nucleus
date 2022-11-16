@@ -1,6 +1,7 @@
 package cn.devspace.nucleus.Manager;
 
 import cn.devspace.nucleus.Lang.LangBase;
+import cn.devspace.nucleus.Message.Log;
 import com.google.gson.Gson;
 import org.yaml.snakeyaml.Yaml;
 
@@ -34,10 +35,9 @@ public class ManagerBase extends LangBase {
         try {
             bf = new BufferedReader(new FileReader(Path));
         } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
+            Log.sendWarn("配置文件找不到");
         }
-        Map<String, String> Map = yaml.loadAs(bf, Map.class);
-        return Map;
+        return yaml.loadAs(bf, Map.class);
     }
 
     public static Map<String, String> getSingeYaml(InputStream inputStream) {
@@ -47,6 +47,7 @@ public class ManagerBase extends LangBase {
         Map<String, String> Map = yaml.loadAs(bf, Map.class);
         return Map;
     }
+
     public static Map<String, ArrayList<String>> getSingeYaml(String Path, boolean ArrayList) {
         Yaml yaml = new Yaml();
         BufferedReader bf = null;

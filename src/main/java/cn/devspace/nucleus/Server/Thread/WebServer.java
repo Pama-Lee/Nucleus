@@ -1,8 +1,8 @@
 package cn.devspace.nucleus.Server.Thread;
 
 import cn.devspace.nucleus.Message.Log;
-import cn.devspace.nucleus.Server.Server;
 import cn.devspace.nucleus.NucleusApplication;
+import cn.devspace.nucleus.Server.Server;
 import org.springframework.boot.SpringApplication;
 
 public class WebServer implements Runnable {

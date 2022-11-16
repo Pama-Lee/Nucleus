@@ -23,7 +23,10 @@
 
 **例如: **
 
-**Nucleus内部存在一个名为[Login]的「APP」, 当SpringBoot获取到来自\*\*.com/Login/LoginMethod 的请求并转发给nucleus后, Nucleus将会对其处理，将请求分发给[Login]中的[LoginMethod]模块，LoginMethod模块的定义是Login给出的, Nucleus并不会在此层面上对Method进行筛选，而是将请求交给[Login],通常, Nucleus会将请求发送给已经在Server中注册的「Login」中的onCall() **
+**Nucleus内部存在一个名为[Login]的「APP」, 当SpringBoot获取到来自\*\*.com/Login/LoginMethod 的请求并转发给nucleus后,
+Nucleus将会对其处理，将请求分发给[Login]中的[LoginMethod]模块，LoginMethod模块的定义是Login给出的,
+Nucleus并不会在此层面上对Method进行筛选，而是将请求交给[Login],通常,
+Nucleus会将请求发送给已经在Server中注册的「Login」中的onCall() **
 
 ## 「APP」的构成以及后续可添加的组件「Plugin」
 

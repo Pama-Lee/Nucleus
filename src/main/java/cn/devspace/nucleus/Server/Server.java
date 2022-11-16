@@ -2,7 +2,6 @@ package cn.devspace.nucleus.Server;
 
 import cn.devspace.nucleus.Lang.LangBase;
 import cn.devspace.nucleus.Manager.Command.CommandBase;
-import cn.devspace.nucleus.Manager.Command.ConsoleManager;
 import cn.devspace.nucleus.Manager.ManagerBase;
 import cn.devspace.nucleus.Manager.SettingManager;
 import cn.devspace.nucleus.Message.Log;
@@ -47,8 +46,8 @@ public class Server extends ManagerBase {
 
     public static Map<String, AppBase> AppList = new HashMap<>();
     public static Map<String, PluginBase> PluginList = new HashMap<>();
-    public static Map<String, Map<String, Class<?>>> RouterList = new HashMap<>();
-    public static Map<String,String> PluginRoute = new HashMap<>();
+    public static Map<String, Map<Map<String, String>, Class<?>>> RouterList = new HashMap<>();
+    public static Map<String, String> PluginRoute = new HashMap<>();
     public static Map<String, Map<CommandBase, Method>> CommandMap = new HashMap<>();
 
 
@@ -94,13 +93,11 @@ public class Server extends ManagerBase {
         Log.sendLog(TranslateOne("App.Version", getServerVersion()));
         Log.sendLog(TranslateOne("App.Licence"));
 
-        PluginLoader pL = new PluginLoader(this,null);
+        PluginLoader pL = new PluginLoader(this, null);
         PluginList = pL.getPlugins();
 
         AppLoader.loadApps(this);
         LoadPlugin();
-
-
 
         Log.sendLog(TranslateOne("App.Run.UseMemory", getUsedMemory()));
         EnableApp();
@@ -116,39 +113,47 @@ public class Server extends ManagerBase {
         }
     }
 
-    public static void EnabledApp(){
+    public static void EnabledApp() {
         for (String app : AppList.keySet()) {
             AppBase appClass = AppList.get(app);
             appClass.onEnabled();
         }
     }
 
-    public static void LoadPlugin(){
-        for (String plugin:PluginList.keySet()){
+    public static void LoadPlugin() {
+        for (String plugin : PluginList.keySet()) {
             PluginBase pluginBase = PluginList.get(plugin);
             pluginBase.onLoad();
         }
     }
 
-    public static void EnablePlugin(){
-        for (String plugin:PluginList.keySet()){
+    public static void EnablePlugin() {
+        for (String plugin : PluginList.keySet()) {
             PluginBase pluginBase = PluginList.get(plugin);
             pluginBase.onEnable();
         }
     }
-    public static void EnabledPlugin(){
-        for (String plugin:PluginList.keySet()){
+
+    public static void EnabledPlugin() {
+        for (String plugin : PluginList.keySet()) {
             PluginBase pluginBase = PluginList.get(plugin);
             pluginBase.onEnabled();
         }
     }
 
 
-
-    public void preDIR(){
+    public void preDIR() {
         //检查插件目录
-        if (!new File(RunPath+"plugins/").exists()){
+        if (!new File(RunPath + "plugins/").exists()) {
+            new File(RunPath + "plugins/").mkdir();
+        }
+        if (!new File(RunPath+"Pages/").exists()){
             new File(RunPath+"plugins/").mkdir();
+            try {
+                new File(RunPath+"plugins/404.html").createNewFile();
+            } catch (IOException e) {
+                Log.sendWarn("无法创建404文件");
+            }
         }
     }
 

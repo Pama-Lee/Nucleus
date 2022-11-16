@@ -1,13 +1,13 @@
 package cn.devspace.nucleus.Plugin;
 
 import cn.devspace.nucleus.Manager.AnnotationManager;
+import cn.devspace.nucleus.Manager.Router;
 import cn.devspace.nucleus.Message.Log;
 import cn.devspace.nucleus.Server.Server;
 import org.springframework.core.io.ClassPathResource;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -58,7 +58,7 @@ public class AppLoader implements Loader {
                     String main = appDes.getMain();
                     Class<?> c = Class.forName(main);
                     AppBase app = (AppBase) c.getDeclaredConstructor().newInstance();
-                    Map<String, Class<?>> maps = AnnotationManager.getRouterAnnotation(c);
+                    Map<Map<String, String>, Class<?>> maps = AnnotationManager.getRouterAnnotation((Class<Router>) c);
                     Server.RouterList.put(apps, maps);
                     app.setDescription(appDes);
                     Log.AppStart(Server.getInstance().Translators("App.Start", apps));

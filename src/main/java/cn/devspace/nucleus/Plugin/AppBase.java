@@ -9,12 +9,8 @@ import cn.devspace.nucleus.Message.Log;
 import cn.devspace.nucleus.Server.Server;
 import org.springframework.core.io.ClassPathResource;
 
-import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Map;
-
-import static cn.devspace.nucleus.Server.Server.RunPath;
 
 
 abstract public class AppBase extends ManagerBase {
@@ -38,12 +34,14 @@ abstract public class AppBase extends ManagerBase {
 
     }
 
-    public void onEnabled(){
+    public void onEnabled() {
 
     }
 
-    public void RouteRegister() {
-
+    protected void initRoute(Class<?> classes) {
+        Map<Map<String, String>, Class<?>> maps = AnnotationManager.getRouterAnnotation(classes);
+        Server.RouterList.put(getDescription().getRoute(), maps);
+        Server.PluginRoute.put(getDescription().getRoute(), AppName);
     }
 
     public String onCall(String route, String method) {
