@@ -1,8 +1,11 @@
 package cn.devspace.nucleus.Server;
 
 import cn.devspace.nucleus.Lang.LangBase;
+import cn.devspace.nucleus.Manager.Annotation.version.Nucleus;
 import cn.devspace.nucleus.Manager.BeanManager;
+import cn.devspace.nucleus.Manager.ClassLoaderManager;
 import cn.devspace.nucleus.Manager.Command.CommandBase;
+import cn.devspace.nucleus.Manager.DataBase.DataBaseManager;
 import cn.devspace.nucleus.Manager.ManagerBase;
 import cn.devspace.nucleus.Manager.SettingManager;
 import cn.devspace.nucleus.Message.Log;
@@ -10,9 +13,7 @@ import cn.devspace.nucleus.Plugin.AppBase;
 import cn.devspace.nucleus.Plugin.AppLoader;
 import cn.devspace.nucleus.Plugin.PluginBase;
 import cn.devspace.nucleus.Plugin.PluginLoader;
-import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.io.File;
@@ -23,10 +24,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
-@Component("Server")
+
 public class Server extends ManagerBase {
 
-    public static final String VERSION = "0.0.1-alpha";
+    public static final String VERSION = "0.0.2-alpha";
     public static final String AUTHOR = "Pama Lee";
 
     public static final String NAME = "Nucleus(JAVA)";
@@ -50,9 +51,16 @@ public class Server extends ManagerBase {
     @Resource
     public BeanManager beanManager;
 
+    @Nucleus("0.0.2-alpha")
+    public ClassLoaderManager classLoaderManager = new ClassLoaderManager();
+
+    @Nucleus("0.0.2-alpha")
+    public DataBaseManager dataBaseManager = new DataBaseManager();
+
 
     private static final Runtime runtime = Runtime.getRuntime();
 
+    @Nucleus("0.0.1")
     public Server() {
         init();
         //初始化多语言

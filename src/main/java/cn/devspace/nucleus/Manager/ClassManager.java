@@ -1,15 +1,12 @@
 package cn.devspace.nucleus.Manager;
 
 import cn.devspace.nucleus.Message.Log;
-import cn.devspace.nucleus.Plugin.*;
+import cn.devspace.nucleus.Plugin.Description;
+import cn.devspace.nucleus.Plugin.Loader;
+import cn.devspace.nucleus.Plugin.PluginClassLoader;
 
 import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.net.JarURLConnection;
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLDecoder;
 import java.util.Enumeration;
 import java.util.LinkedHashSet;
 import java.util.Set;

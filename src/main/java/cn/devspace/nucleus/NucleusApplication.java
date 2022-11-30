@@ -13,10 +13,8 @@ import cn.devspace.nucleus.App.Login.User;
 import cn.devspace.nucleus.Manager.BeanManager;
 import cn.devspace.nucleus.Manager.DataBase.DataBase;
 import cn.devspace.nucleus.Message.Log;
-import cn.devspace.nucleus.Plugin.AppBase;
 import cn.devspace.nucleus.Server.Server;
 import cn.devspace.nucleus.Server.Thread.WebServer;
-
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import javax.annotation.Resource;
