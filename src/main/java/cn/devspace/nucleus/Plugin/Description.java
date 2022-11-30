@@ -15,6 +15,7 @@ public class Description {
     private String dbName;
     private String dbType;
     private String route;
+
     public Description(String YamlString) {
         Yaml yml = new Yaml();
         this.LoadMap(yml.loadAs(YamlString, Map.class));
@@ -67,5 +68,7 @@ public class Description {
         return this.dbName;
     }
 
-    public String getRoute(){return this.route;}
+    public String getRoute() {
+        return this.route;
+    }
 }

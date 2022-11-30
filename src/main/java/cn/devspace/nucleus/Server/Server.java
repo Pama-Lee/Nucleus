@@ -1,8 +1,8 @@
 package cn.devspace.nucleus.Server;
 
 import cn.devspace.nucleus.Lang.LangBase;
+import cn.devspace.nucleus.Manager.BeanManager;
 import cn.devspace.nucleus.Manager.Command.CommandBase;
-import cn.devspace.nucleus.Manager.Command.ConsoleManager;
 import cn.devspace.nucleus.Manager.ManagerBase;
 import cn.devspace.nucleus.Manager.SettingManager;
 import cn.devspace.nucleus.Message.Log;
@@ -10,18 +10,20 @@ import cn.devspace.nucleus.Plugin.AppBase;
 import cn.devspace.nucleus.Plugin.AppLoader;
 import cn.devspace.nucleus.Plugin.PluginBase;
 import cn.devspace.nucleus.Plugin.PluginLoader;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
-
+@Component("Server")
 public class Server extends ManagerBase {
 
     public static final String VERSION = "0.0.1-alpha";
@@ -29,9 +31,6 @@ public class Server extends ManagerBase {
 
     public static final String NAME = "Nucleus(JAVA)";
 
-    public final URL ROOT = this.getClass().getResource("/");
-    public String classPath = new File(this.getClass().getResource("").getPath()).getPath() + "/";
-    public String AppPath = classPath.replace("Server", "App") + "/";
     public static String RunPath = System.getProperty("user.dir") + "/";
     public LangBase lang;
     public SettingManager settingManager;
@@ -42,17 +41,17 @@ public class Server extends ManagerBase {
 
     protected static Thread currentThread;
 
-    public Map<String, PluginBase> pluginList;
-
-
     public static Map<String, AppBase> AppList = new HashMap<>();
     public static Map<String, PluginBase> PluginList = new HashMap<>();
-    public static Map<String, Map<String, Class<?>>> RouterList = new HashMap<>();
-    public static Map<String,String> PluginRoute = new HashMap<>();
+    public static Map<String, Map<Map<String, String>, Class<?>>> RouterList = new HashMap<>();
+    public static Map<String, String> PluginRoute = new HashMap<>();
     public static Map<String, Map<CommandBase, Method>> CommandMap = new HashMap<>();
 
+    @Resource
+    public BeanManager beanManager;
 
-    private static Runtime runtime = Runtime.getRuntime();
+
+    private static final Runtime runtime = Runtime.getRuntime();
 
     public Server() {
         init();
@@ -71,7 +70,8 @@ public class Server extends ManagerBase {
                 InputStream set = new ClassPathResource("nucleus.yml").getInputStream();
                 InputStream route = new ClassPathResource("route.yml").getInputStream();
                 Log.sendLog(RunPath);
-                new File(RunPath + "resources/").mkdirs();
+                boolean newFile =  new File(RunPath + "resources/").mkdirs();
+                if (!newFile) Log.sendError("The configuration file is distributable",12);
                 Files.copy(set, Path.of(RunPath + "resources/nucleus.yml"));
                 Files.copy(route, Path.of(RunPath + "resources/route.yml"));
 
@@ -85,22 +85,22 @@ public class Server extends ManagerBase {
 
 
     public void Start() {
+        beanManager = new BeanManager();
         this.preDIR();
         //服务器开启
 
         //处理语言
         Log.sendLog(TranslateOne("Language.Use", this.Language));
         Log.sendLog(TranslateOne("App.Name", getName(), getServerVersion()));
+        Log.sendLog(getAuthor());
         Log.sendLog(TranslateOne("App.Version", getServerVersion()));
         Log.sendLog(TranslateOne("App.Licence"));
 
-        PluginLoader pL = new PluginLoader(this,null);
+        PluginLoader pL = new PluginLoader(this, null);
         PluginList = pL.getPlugins();
 
         AppLoader.loadApps(this);
         LoadPlugin();
-
-
 
         Log.sendLog(TranslateOne("App.Run.UseMemory", getUsedMemory()));
         EnableApp();
@@ -110,51 +110,57 @@ public class Server extends ManagerBase {
     }
 
     private void EnableApp() {
-        for (String app : this.AppList.keySet()) {
-            AppBase appClass = this.AppList.get(app);
+        for (String app : AppList.keySet()) {
+            AppBase appClass = AppList.get(app);
             appClass.onEnable();
         }
     }
 
-    public static void EnabledApp(){
+    public static void EnabledApp() {
         for (String app : AppList.keySet()) {
             AppBase appClass = AppList.get(app);
+            Server.getInstance().beanManager.registerBean(app,appClass.getClass());
             appClass.onEnabled();
         }
     }
 
-    public static void LoadPlugin(){
-        for (String plugin:PluginList.keySet()){
+    public static void LoadPlugin() {
+        for (String plugin : PluginList.keySet()) {
             PluginBase pluginBase = PluginList.get(plugin);
             pluginBase.onLoad();
         }
     }
 
-    public static void EnablePlugin(){
-        for (String plugin:PluginList.keySet()){
+    public static void EnablePlugin() {
+        for (String plugin : PluginList.keySet()) {
             PluginBase pluginBase = PluginList.get(plugin);
             pluginBase.onEnable();
         }
     }
-    public static void EnabledPlugin(){
-        for (String plugin:PluginList.keySet()){
+
+    public static void EnabledPlugin() {
+        for (String plugin : PluginList.keySet()) {
             PluginBase pluginBase = PluginList.get(plugin);
             pluginBase.onEnabled();
         }
     }
 
 
-
-    public void preDIR(){
+    public void preDIR() {
         //检查插件目录
-        if (!new File(RunPath+"plugins/").exists()){
-            new File(RunPath+"plugins/").mkdir();
+        if (!new File(RunPath + "plugins/").exists()) {
+           boolean newPlugin =  new File(RunPath + "plugins/").mkdir();
+           if (!newPlugin) Log.sendError("Can not init Server",13);
         }
-    }
-
-    public static <T> boolean isStartupFromJar(Class<T> clazz) {
-        File file = new File(clazz.getProtectionDomain().getCodeSource().getLocation().getPath());
-        return file.isFile();
+        if (!new File(RunPath+"Pages/").exists()){
+           boolean newPage =  new File(RunPath+"plugins/").mkdir();
+            try {
+               boolean new404 =  new File(RunPath+"plugins/404.html").createNewFile();
+               if (!newPage || !new404) Log.sendError("Can not init Server",13);
+            } catch (IOException e) {
+                Log.sendWarn("无法创建404文件");
+            }
+        }
     }
 
 

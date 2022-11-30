@@ -3,7 +3,8 @@
 ##          en: English
 ##
 app.language: chs
+Reload.404: yes
 EnableApp:
   - Login
   - Register
-  - whyni
+  - Console

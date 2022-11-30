@@ -28,8 +28,8 @@ public class CommandManager {
                 throw new RuntimeException(e);
             }
 
-        }else{
-            Log.sendWarn(Server.getInstance().Translators("Command.NotFound",getCommandBody(command)));
+        } else {
+            Log.sendWarn(Server.getInstance().Translators("Command.NotFound", getCommandBody(command)));
         }
     }
 
