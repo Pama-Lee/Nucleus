@@ -1,5 +1,6 @@
 package cn.devspace.nucleus.Plugin;
 
+import cn.devspace.nucleus.Manager.ClassManager;
 import cn.devspace.nucleus.Message.Log;
 import cn.devspace.nucleus.Server.Server;
 import org.springframework.core.io.ClassPathResource;
@@ -8,8 +9,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.Map;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -27,9 +29,11 @@ public class PluginLoader implements Loader {
 
     protected String PluginName;
 
+    private Server server;
     public PluginLoader(Server server, String AppName) {
         // this.AppName = AppName;
         //this.description = loadDescription();
+        this.server = server;
     }
 
 
@@ -42,13 +46,14 @@ public class PluginLoader implements Loader {
         }
     }
 
-    public Map<String, JarFile> getPluginJars() {
+    public static Map<String, JarFile> getPluginJars() {
         Map<String, JarFile> res = new HashMap<>();
         String[] list = new File(RunPath + "plugins/").list();
         if (list != null) {
             for (String s : list) {
                 try {
                     JarFile jarFile = new JarFile(new File(RunPath + "plugins/" + s));
+                    res.put(s,jarFile);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -57,6 +62,11 @@ public class PluginLoader implements Loader {
         }
         return res;
     }
+
+    public static JarFile getJar(String plugin){
+        return getPluginJars().get(plugin);
+    }
+
 
     public Description getDescription(JarFile pluginJar) {
         try {
@@ -85,21 +95,32 @@ public class PluginLoader implements Loader {
                     String jarFix = strArray[suffixIndex];
                     if (jarFix.equals("jar")) {
                         try {
-                            PluginClassLoader pcl = new PluginClassLoader(this, this.getClass().getClassLoader(), new File(RunPath + "plugins/" + s));
+                            PluginClassLoader pcl = new PluginClassLoader(this,this.getClass().getClassLoader(), new File(RunPath + "plugins/" + s));
+
                             Description description = getDescription(new JarFile(RunPath + "plugins/" + s));
 
                             if (description == null) {
                                 Log.sendWarn("没有配置文件");
                                 continue;
                             }
-
                             String mainClass = description.getMain();
+//                            Class<PluginBase> clazz = (Class<PluginBase>) Class.forName(mainClass, true, new URLClassLoader(new URL[]{new File(RunPath + "plugins/" + s).toURI().toURL()}));
+//                            ClassLoader sc = ClassLoader.getSystemClassLoader();
+
                             Class loadClass = pcl.loadClass(mainClass);
+
+
+//                           clazz.getConstructor().newInstance().onEnable();
+
+                            Log.sendLog(loadClass.getResource("/").toString());
                             Class<PluginBase> pluginClass = (Class<PluginBase>) loadClass.asSubclass(PluginBase.class);
                             PluginBase plugin = pluginClass.getConstructor().newInstance();
                             plugin.setDescription(description);
                             plugin.PluginName = description.getName();
                             res.put(description.getName(), plugin);
+                            ClassManager classManager = new ClassManager();
+                            Set<Class<?>> set = classManager.getClasses("cn.pamalee.nucleus.simpleplugin",new JarFile(RunPath + "plugins/" + s),s);
+                            Log.sendLog(set.toString());
                             // plugin.onLoad();
                         } catch (IOException e) {
                             Log.sendWarn(Server.getInstance().TranslateOne("Plugin.JarCanNotOpen", s));

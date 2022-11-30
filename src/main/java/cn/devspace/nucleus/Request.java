@@ -3,6 +3,7 @@ package cn.devspace.nucleus;
 import cn.devspace.nucleus.Message.Log;
 import cn.devspace.nucleus.Plugin.AppBase;
 import cn.devspace.nucleus.Server.Server;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -15,6 +16,7 @@ import java.util.Set;
 
 
 @RestController
+@CrossOrigin
 public class Request extends HttpServlet {
     @GetMapping("/App/**")
     public String Router(HttpServletRequest request) {

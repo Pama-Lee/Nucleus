@@ -9,17 +9,32 @@
 package cn.devspace.nucleus;
 
 
+import cn.devspace.nucleus.App.Login.User;
+import cn.devspace.nucleus.Manager.BeanManager;
+import cn.devspace.nucleus.Manager.DataBase.DataBase;
 import cn.devspace.nucleus.Message.Log;
+import cn.devspace.nucleus.Plugin.AppBase;
 import cn.devspace.nucleus.Server.Server;
 import cn.devspace.nucleus.Server.Thread.WebServer;
+
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import javax.annotation.Resource;
 
 @SpringBootApplication
 public class NucleusApplication {
+
+    static BeanManager beanManager;
+
+    @Resource
+    public void mine(BeanManager beanManage){
+        beanManager = beanManage;
+    }
     //入口类
     public static void main(String[] args) {
+
+        Server server = new Server();
         try {
-            Server server = new Server();
             server.Start();
         } catch (Exception e) {
             Log.sendWarn(e.toString());
@@ -30,7 +45,7 @@ public class NucleusApplication {
         Server.EnabledApp();
         Server.EnabledPlugin();
         Log.sendLog("测试");
-
+        new DataBase(new User());
     }
 
 }

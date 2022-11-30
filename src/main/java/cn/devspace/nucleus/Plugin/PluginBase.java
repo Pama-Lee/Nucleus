@@ -12,8 +12,7 @@ import java.io.InputStream;
 import java.util.Map;
 
 abstract public class PluginBase extends ManagerBase implements Loader {
-    protected String callback = null;
-    protected static String LoadingApp = null;
+
     protected static LangBase AppLang = null;
 
     protected Description description;
@@ -36,33 +35,10 @@ abstract public class PluginBase extends ManagerBase implements Loader {
 
     }
 
-    public void RouteRegister() {
-
-    }
-
     protected void initRoute(Class<?> classes) {
         Map<Map<String, String>, Class<?>> maps = AnnotationManager.getRouterAnnotation(classes);
         Server.RouterList.put(getDescription().getRoute(), maps);
         Server.PluginRoute.put(getDescription().getRoute(), PluginName);
-    }
-
-    public String onCall(String route, String method) {
-        return null;
-    }
-
-    public String onCall(String route, String method, Map<String, String> Request) {
-        return null;
-    }
-
-
-    protected DataManager getDataManager() {
-        if (description.getDataBase() == null) {
-            // TODO: 应当给出提示
-            return null;
-        } else {
-            // return new DataManager();
-        }
-        return null;
     }
 
 
@@ -115,5 +91,9 @@ abstract public class PluginBase extends ManagerBase implements Loader {
 
     }
 
+    @Override
+    public String getName() {
+        return PluginName;
+    }
 }
 

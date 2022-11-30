@@ -1,6 +1,7 @@
 package cn.devspace.nucleus.Plugin;
 
 import cn.devspace.nucleus.Manager.AnnotationManager;
+import cn.devspace.nucleus.Manager.BeanManager;
 import cn.devspace.nucleus.Manager.Router;
 import cn.devspace.nucleus.Message.Log;
 import cn.devspace.nucleus.Server.Server;
@@ -65,6 +66,7 @@ public class AppLoader implements Loader {
                     app.localApp(apps);
                     //开始执行onload
                     app.onLoad();
+                    BeanManager beanManager = new BeanManager();
                     Log.AppStart(Server.getInstance().Translators("App.Loaded", apps));
                     Server.AppList.put(apps, app);
                 }

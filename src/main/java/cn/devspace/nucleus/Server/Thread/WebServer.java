@@ -20,6 +20,5 @@ public class WebServer implements Runnable {
     public void run() {
         Log.sendLog(Server.getInstance().TranslateOne("Server.Open"));
         SpringApplication.run(NucleusApplication.class, this.args);
-
     }
 }
