@@ -51,15 +51,19 @@ public class Server extends ManagerBase {
     @Resource
     public BeanManager beanManager;
 
+    //类加载器管理者
     @Nucleus("0.0.2-alpha")
-    public ClassLoaderManager classLoaderManager = new ClassLoaderManager();
-
+    public static ClassLoaderManager classLoaderManager = new ClassLoaderManager();
+    //数据库管理者
     @Nucleus("0.0.2-alpha")
     public DataBaseManager dataBaseManager = new DataBaseManager();
 
 
     private static final Runtime runtime = Runtime.getRuntime();
 
+    /**
+     * 构建服务器
+     */
     @Nucleus("0.0.1")
     public Server() {
         init();
@@ -72,12 +76,16 @@ public class Server extends ManagerBase {
         Instance = this;
     }
 
+    /**
+     * 服务器第一次启动的初始化
+     * 其中执行一些配置文件的操作
+     */
     public static void init() {
         if (!new File(RunPath + "resources/").exists()) {
             try {
                 InputStream set = new ClassPathResource("nucleus.yml").getInputStream();
                 InputStream route = new ClassPathResource("route.yml").getInputStream();
-                Log.sendLog(RunPath);
+                //Log.sendLog(RunPath);
                 boolean newFile =  new File(RunPath + "resources/").mkdirs();
                 if (!newFile) Log.sendError("The configuration file is distributable",12);
                 Files.copy(set, Path.of(RunPath + "resources/nucleus.yml"));
@@ -104,7 +112,10 @@ public class Server extends ManagerBase {
         Log.sendLog(TranslateOne("App.Version", getServerVersion()));
         Log.sendLog(TranslateOne("App.Licence"));
 
-        PluginLoader pL = new PluginLoader(this, null);
+        String classLoaderPluginHash = classLoaderManager.createClassLoader();
+
+
+        PluginLoader pL = new PluginLoader(this, null,classLoaderManager);
         PluginList = pL.getPlugins();
 
         AppLoader.loadApps(this);
@@ -114,7 +125,7 @@ public class Server extends ManagerBase {
         EnableApp();
         EnablePlugin();
         //ConsoleManager con = new ConsoleManager();
-        Log.sendLog(CommandMap.toString());
+        //Log.sendLog(CommandMap.toString());
     }
 
     private void EnableApp() {
@@ -127,7 +138,7 @@ public class Server extends ManagerBase {
     public static void EnabledApp() {
         for (String app : AppList.keySet()) {
             AppBase appClass = AppList.get(app);
-            Server.getInstance().beanManager.registerBean(app,appClass.getClass());
+            BeanManager.registerBean(app,appClass.getClass());
             appClass.onEnabled();
         }
     }
@@ -166,7 +177,7 @@ public class Server extends ManagerBase {
                boolean new404 =  new File(RunPath+"plugins/404.html").createNewFile();
                if (!newPage || !new404) Log.sendError("Can not init Server",13);
             } catch (IOException e) {
-                Log.sendWarn("无法创建404文件");
+                Log.sendWarn("Can not create 404 file");
             }
         }
     }

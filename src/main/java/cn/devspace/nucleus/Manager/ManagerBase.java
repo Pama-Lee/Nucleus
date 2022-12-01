@@ -12,11 +12,23 @@ import java.util.Map;
 
 public class ManagerBase extends LangBase {
 
+    /**
+     * 将Map数据转为json
+     * @param Map 传入Map数据
+     * @return 返回String类型json
+     */
     public String Map2Json(Map<String, String> Map) {
         Gson gson = new Gson();
         return gson.toJson(Map);
     }
 
+    /**
+     * 构造简单的返回数据
+     * @param code 返回的代码
+     * @param status 返回的状态
+     * @param Message 返回的信息
+     * @return 返回构造完毕的Map数据
+     */
     public Map<String, String> makeResponse(int code, int status, String Message) {
         Map<String, String> Response = new HashMap<>();
         Response.put("code", String.valueOf(code));
@@ -25,10 +37,22 @@ public class ManagerBase extends LangBase {
         return Response;
     }
 
+    /**
+     * 狗仔简单的返回数据Json字符串
+     * @param code 返回的代码
+     * @param status 返回的状态
+     * @param Message 返回的信息
+     * @return 返回构造完毕的json字符串
+     */
     public String ResponseString(int code, int status, String Message) {
         return this.Map2Json(this.makeResponse(code, status, Message));
     }
 
+    /**
+     * 获取简单的Yaml配置文件
+     * @param Path 配置文件地址
+     * @return 返回key和value均为string的数据
+     */
     public static Map<String, String> getSingeYaml(String Path) {
         Yaml yaml = new Yaml();
         BufferedReader bf = null;

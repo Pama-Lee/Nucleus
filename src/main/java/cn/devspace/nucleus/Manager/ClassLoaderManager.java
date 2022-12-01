@@ -12,6 +12,11 @@
 
 package cn.devspace.nucleus.Manager;
 
+import cn.devspace.nucleus.Manager.Annotation.version.Nucleus;
+
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URLClassLoader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,6 +28,14 @@ public class ClassLoaderManager {
     //初始化工厂方法
     private ClassLoaderFactory classLoaderFactory = new ClassLoaderFactory();
 
+    public Map<String, String> getClassLoaderMapping() {
+        return classLoaderMapping;
+    }
+
+    public Map<String, ClassLoader> getClassLoaderMap() {
+        return classLoaderMap;
+    }
+
     /**
      * 创建默认类加载器
      *
@@ -33,6 +46,16 @@ public class ClassLoaderManager {
         return putLoaderMap(classLoader);
     }
 
+    /**
+     * 创建默认URL构造器
+     * @param file 需要构造的class
+     * @return 返回classloader对应的哈希值, 可通过哈希值拿到加载器
+     */
+    @Nucleus("v0.0.2-alpha")
+    public String createURLClassLoader(File file) throws MalformedURLException {
+        URLClassLoader urlClassLoader = classLoaderFactory.createURLClassLoaderTemplate(file);
+        return  putLoaderMap(urlClassLoader);
+    }
     /**
      * 直接通过类加载器的哈希值拿到类加载器
      * @param hashCode 哈希值
