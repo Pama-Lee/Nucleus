@@ -21,13 +21,13 @@ public class DataBase {
 
     protected Map<String, Session> sessionMap = new HashMap<>();
 
-    public DataBase(DataEntity dataEntity){
-        Session session =  initDatabase(dataEntity,null);
+    public DataBase(Class<?> clazz,DataEntity dataEntity){
+        Session session =  initDatabase(clazz,dataEntity,null);
         this.session = session;
     }
 
-    public DataBase(DataEntity dataEntity,Properties properties){
-        Session session1 = initDatabase(dataEntity,properties);
+    public DataBase(Class<?> clazz,DataEntity dataEntity,Properties properties){
+        Session session1 = initDatabase(clazz,dataEntity,properties);
         this.session = session1;
     }
 
@@ -45,7 +45,7 @@ public class DataBase {
         return session;
     }
 
-    public static Session initDatabase(DataEntity dataEntity,Properties properties) {
+    public static Session initDatabase(Class<?> clazz,DataEntity dataEntity,Properties properties) {
         try {
             Properties prop;
             if (properties == null){
@@ -57,16 +57,16 @@ public class DataBase {
                 prop.setProperty("hibernate.connection.username", "root");
                 prop.setProperty("hibernate.connection.password", "ljk1249072779");
                 prop.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
-                prop.setProperty("hibernate.show_sql", "false");
-                prop.setProperty("hibernate.format_sql", "false");
+                prop.setProperty("hibernate.show_sql", "true");
+                prop.setProperty("hibernate.format_sql", "true");
                 prop.setProperty("dialect", "org.hibernate.dialect.Mysql8Dialect");
-                prop.setProperty("hbm2ddl.auto", "update");
+                prop.setProperty("hibernate.hbm2ddl.auto", "update");
                 prop.setProperty("org.hibernate", "NONE");
             }else {
                 prop = properties;
             }
            // Log.sendLog(Server.PluginList.toString());
-            BootstrapServiceRegistry bootstrapServiceRegistry = new BootstrapServiceRegistryBuilder().applyClassLoader(Server.PluginList.get("SimplePlugin").getClass().getClassLoader()).build();
+            BootstrapServiceRegistry bootstrapServiceRegistry = new BootstrapServiceRegistryBuilder().applyClassLoader(clazz.getClassLoader()).build();
             concreteSessionFactory = new Configuration(bootstrapServiceRegistry)
                     .addProperties(prop)
                     .addAnnotatedClass(dataEntity.getClass())

@@ -42,8 +42,7 @@ public class NucleusApplication {
         webServer.run();
         Server.EnabledApp();
         Server.EnabledPlugin();
-       // Log.sendLog("测试");
-        new DataBase(new User());
+
     }
 
 }
