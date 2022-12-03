@@ -129,38 +129,95 @@ public class Server extends ManagerBase {
     }
 
     private void EnableApp() {
-        for (String app : AppList.keySet()) {
-            AppBase appClass = AppList.get(app);
-            appClass.onEnable();
+        String cApp = null;
+        try {
+            for (String app : AppList.keySet()) {
+                cApp = app;
+                AppBase appClass = AppList.get(app);
+                appClass.onEnable();
+            }
+        }catch (Exception e){
+            Log.sendWarn(TranslateOne("App.EnableError",cApp,e.toString()));
+            disableApp(cApp);
+        }
+
+    }
+
+    public void EnabledApp() {
+        String cApp = null;
+        try {
+            for (String app : AppList.keySet()) {
+                cApp = app;
+                AppBase appClass = AppList.get(app);
+                BeanManager.registerBean(app,appClass.getClass());
+                appClass.onEnabled();
+            }
+        }catch (Exception e){
+            Log.sendWarn(TranslateOne("App.EnabledError",cApp,e.toString()));
+            disableApp(cApp);
+        }
+
+    }
+
+    public void LoadPlugin() {
+        String cPlugin = null;
+        try {
+            for (String plugin : PluginList.keySet()) {
+                cPlugin = plugin;
+                PluginBase pluginBase = PluginList.get(plugin);
+                pluginBase.onLoad();
+            }
+        }catch (Exception e){
+            Log.sendWarn(TranslateOne("Plugin.LoadError",cPlugin,e.toString()));
+            disablePlugin(cPlugin);
+        }
+
+    }
+
+    public void EnablePlugin() {
+        String cPlugin = null;
+        try {
+            for (String plugin : PluginList.keySet()) {
+                cPlugin = plugin;
+                PluginBase pluginBase = PluginList.get(plugin);
+                pluginBase.onEnable();
+            }
+        }catch (Exception e){
+            Log.sendWarn(TranslateOne("Plugin.EnableError",cPlugin,e.toString()));
+            disablePlugin(cPlugin);
+        }
+
+    }
+
+    public void EnabledPlugin() {
+        String cPlugin = null;
+        try {
+            for (String plugin : PluginList.keySet()) {
+                cPlugin = plugin;
+                PluginBase pluginBase = PluginList.get(plugin);
+                pluginBase.onEnabled();
+            }
+        }catch (Exception e){
+            Log.sendWarn(TranslateOne("Plugin.EnabledError",cPlugin,e.toString()));
+            disablePlugin(cPlugin);
         }
     }
 
-    public static void EnabledApp() {
-        for (String app : AppList.keySet()) {
-            AppBase appClass = AppList.get(app);
-            BeanManager.registerBean(app,appClass.getClass());
-            appClass.onEnabled();
+    public void disablePlugin(String plugin){
+        try {
+            PluginList.remove(plugin);
+            Log.sendWarn(TranslateOne("Plugin.Disable",plugin));
+        }catch (Exception e){
+            Log.sendWarn(TranslateOne("Disable.Error",plugin));
         }
     }
 
-    public static void LoadPlugin() {
-        for (String plugin : PluginList.keySet()) {
-            PluginBase pluginBase = PluginList.get(plugin);
-            pluginBase.onLoad();
-        }
-    }
-
-    public static void EnablePlugin() {
-        for (String plugin : PluginList.keySet()) {
-            PluginBase pluginBase = PluginList.get(plugin);
-            pluginBase.onEnable();
-        }
-    }
-
-    public static void EnabledPlugin() {
-        for (String plugin : PluginList.keySet()) {
-            PluginBase pluginBase = PluginList.get(plugin);
-            pluginBase.onEnabled();
+    public void disableApp(String app){
+        try {
+            AppList.remove(app);
+            Log.sendWarn(TranslateOne("App.Disable",app));
+        }catch (Exception e){
+            Log.sendWarn(TranslateOne("Disable.Error",app));
         }
     }
 
