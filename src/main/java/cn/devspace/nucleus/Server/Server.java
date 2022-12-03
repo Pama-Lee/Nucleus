@@ -1,8 +1,11 @@
 package cn.devspace.nucleus.Server;
 
 import cn.devspace.nucleus.Lang.LangBase;
+import cn.devspace.nucleus.Manager.Annotation.version.Nucleus;
 import cn.devspace.nucleus.Manager.BeanManager;
+import cn.devspace.nucleus.Manager.ClassLoaderManager;
 import cn.devspace.nucleus.Manager.Command.CommandBase;
+import cn.devspace.nucleus.Manager.DataBase.DataBaseManager;
 import cn.devspace.nucleus.Manager.ManagerBase;
 import cn.devspace.nucleus.Manager.SettingManager;
 import cn.devspace.nucleus.Message.Log;
@@ -10,9 +13,7 @@ import cn.devspace.nucleus.Plugin.AppBase;
 import cn.devspace.nucleus.Plugin.AppLoader;
 import cn.devspace.nucleus.Plugin.PluginBase;
 import cn.devspace.nucleus.Plugin.PluginLoader;
-import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.io.File;
@@ -23,10 +24,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
-@Component("Server")
+
 public class Server extends ManagerBase {
 
-    public static final String VERSION = "0.0.1-alpha";
+    public static final String VERSION = "0.0.2-alpha";
     public static final String AUTHOR = "Pama Lee";
 
     public static final String NAME = "Nucleus(JAVA)";
@@ -50,9 +51,20 @@ public class Server extends ManagerBase {
     @Resource
     public BeanManager beanManager;
 
+    //类加载器管理者
+    @Nucleus("0.0.2-alpha")
+    public static ClassLoaderManager classLoaderManager = new ClassLoaderManager();
+    //数据库管理者
+    @Nucleus("0.0.2-alpha")
+    public DataBaseManager dataBaseManager = new DataBaseManager();
+
 
     private static final Runtime runtime = Runtime.getRuntime();
 
+    /**
+     * 构建服务器
+     */
+    @Nucleus("0.0.1")
     public Server() {
         init();
         //初始化多语言
@@ -64,12 +76,16 @@ public class Server extends ManagerBase {
         Instance = this;
     }
 
+    /**
+     * 服务器第一次启动的初始化
+     * 其中执行一些配置文件的操作
+     */
     public static void init() {
         if (!new File(RunPath + "resources/").exists()) {
             try {
                 InputStream set = new ClassPathResource("nucleus.yml").getInputStream();
                 InputStream route = new ClassPathResource("route.yml").getInputStream();
-                Log.sendLog(RunPath);
+                //Log.sendLog(RunPath);
                 boolean newFile =  new File(RunPath + "resources/").mkdirs();
                 if (!newFile) Log.sendError("The configuration file is distributable",12);
                 Files.copy(set, Path.of(RunPath + "resources/nucleus.yml"));
@@ -96,7 +112,10 @@ public class Server extends ManagerBase {
         Log.sendLog(TranslateOne("App.Version", getServerVersion()));
         Log.sendLog(TranslateOne("App.Licence"));
 
-        PluginLoader pL = new PluginLoader(this, null);
+        String classLoaderPluginHash = classLoaderManager.createClassLoader();
+
+
+        PluginLoader pL = new PluginLoader(this, null,classLoaderManager);
         PluginList = pL.getPlugins();
 
         AppLoader.loadApps(this);
@@ -106,42 +125,99 @@ public class Server extends ManagerBase {
         EnableApp();
         EnablePlugin();
         //ConsoleManager con = new ConsoleManager();
-        Log.sendLog(CommandMap.toString());
+        //Log.sendLog(CommandMap.toString());
     }
 
     private void EnableApp() {
-        for (String app : AppList.keySet()) {
-            AppBase appClass = AppList.get(app);
-            appClass.onEnable();
+        String cApp = null;
+        try {
+            for (String app : AppList.keySet()) {
+                cApp = app;
+                AppBase appClass = AppList.get(app);
+                appClass.onEnable();
+            }
+        }catch (Exception e){
+            Log.sendWarn(TranslateOne("App.EnableError",cApp,e.toString()));
+            disableApp(cApp);
+        }
+
+    }
+
+    public void EnabledApp() {
+        String cApp = null;
+        try {
+            for (String app : AppList.keySet()) {
+                cApp = app;
+                AppBase appClass = AppList.get(app);
+                BeanManager.registerBean(app,appClass.getClass());
+                appClass.onEnabled();
+            }
+        }catch (Exception e){
+            Log.sendWarn(TranslateOne("App.EnabledError",cApp,e.toString()));
+            disableApp(cApp);
+        }
+
+    }
+
+    public void LoadPlugin() {
+        String cPlugin = null;
+        try {
+            for (String plugin : PluginList.keySet()) {
+                cPlugin = plugin;
+                PluginBase pluginBase = PluginList.get(plugin);
+                pluginBase.onLoad();
+            }
+        }catch (Exception e){
+            Log.sendWarn(TranslateOne("Plugin.LoadError",cPlugin,e.toString()));
+            disablePlugin(cPlugin);
+        }
+
+    }
+
+    public void EnablePlugin() {
+        String cPlugin = null;
+        try {
+            for (String plugin : PluginList.keySet()) {
+                cPlugin = plugin;
+                PluginBase pluginBase = PluginList.get(plugin);
+                pluginBase.onEnable();
+            }
+        }catch (Exception e){
+            Log.sendWarn(TranslateOne("Plugin.EnableError",cPlugin,e.toString()));
+            disablePlugin(cPlugin);
+        }
+
+    }
+
+    public void EnabledPlugin() {
+        String cPlugin = null;
+        try {
+            for (String plugin : PluginList.keySet()) {
+                cPlugin = plugin;
+                PluginBase pluginBase = PluginList.get(plugin);
+                pluginBase.onEnabled();
+            }
+        }catch (Exception e){
+            Log.sendWarn(TranslateOne("Plugin.EnabledError",cPlugin,e.toString()));
+            disablePlugin(cPlugin);
         }
     }
 
-    public static void EnabledApp() {
-        for (String app : AppList.keySet()) {
-            AppBase appClass = AppList.get(app);
-            Server.getInstance().beanManager.registerBean(app,appClass.getClass());
-            appClass.onEnabled();
+    public void disablePlugin(String plugin){
+        try {
+            PluginList.remove(plugin);
+            Log.sendWarn(TranslateOne("Plugin.Disable",plugin));
+        }catch (Exception e){
+            Log.sendWarn(TranslateOne("Disable.Error",plugin));
         }
     }
 
-    public static void LoadPlugin() {
-        for (String plugin : PluginList.keySet()) {
-            PluginBase pluginBase = PluginList.get(plugin);
-            pluginBase.onLoad();
-        }
-    }
-
-    public static void EnablePlugin() {
-        for (String plugin : PluginList.keySet()) {
-            PluginBase pluginBase = PluginList.get(plugin);
-            pluginBase.onEnable();
-        }
-    }
-
-    public static void EnabledPlugin() {
-        for (String plugin : PluginList.keySet()) {
-            PluginBase pluginBase = PluginList.get(plugin);
-            pluginBase.onEnabled();
+    public void disableApp(String app){
+        try {
+            AppList.remove(app);
+            Log.sendWarn(TranslateOne("App.Disable",app));
+        }catch (Exception e){
+            Log.sendWarn(TranslateOne("Disable.Error",app));
         }
     }
 
@@ -158,7 +234,7 @@ public class Server extends ManagerBase {
                boolean new404 =  new File(RunPath+"plugins/404.html").createNewFile();
                if (!newPage || !new404) Log.sendError("Can not init Server",13);
             } catch (IOException e) {
-                Log.sendWarn("无法创建404文件");
+                Log.sendWarn("Can not create 404 file");
             }
         }
     }

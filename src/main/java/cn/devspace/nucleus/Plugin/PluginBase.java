@@ -2,7 +2,6 @@ package cn.devspace.nucleus.Plugin;
 
 import cn.devspace.nucleus.Lang.LangBase;
 import cn.devspace.nucleus.Manager.AnnotationManager;
-import cn.devspace.nucleus.Manager.DataManager;
 import cn.devspace.nucleus.Manager.ManagerBase;
 import cn.devspace.nucleus.Message.Log;
 import cn.devspace.nucleus.Server.Server;

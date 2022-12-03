@@ -1,9 +1,7 @@
 package cn.devspace.nucleus.Manager.Annotation;
 
 
-import lombok.Data;
-
-import javax.persistence.*;
+import javax.persistence.Entity;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

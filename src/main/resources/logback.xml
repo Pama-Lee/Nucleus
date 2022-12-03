@@ -1,10 +1,10 @@
 <configuration>
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <pattern>%blue(%d{YYYY-MM-dd-HH:mm:ss.SSS}) %white([%thread]) %yellow(%-5level) %white(%logger{36})-%white(%msg%n)</pattern>
         </encoder>
     </appender>
-    <logger name="org.hibernate" level="info" />
+    <logger name="org.hibernate" level="warn" />
     <logger name="org.hibernate.SQL" level="debug" />
     <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="warn" />
     <logger name="org.hibernate.type.BasicTypeRegistry" level="warn" />

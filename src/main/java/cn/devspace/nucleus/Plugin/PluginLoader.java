@@ -1,5 +1,6 @@
 package cn.devspace.nucleus.Plugin;
 
+import cn.devspace.nucleus.Manager.ClassLoaderManager;
 import cn.devspace.nucleus.Manager.ClassManager;
 import cn.devspace.nucleus.Message.Log;
 import cn.devspace.nucleus.Server.Server;
@@ -9,12 +10,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-
 
 import static cn.devspace.nucleus.Server.Server.RunPath;
 
@@ -23,6 +24,8 @@ public class PluginLoader implements Loader {
 
     protected Description description;
 
+    private ClassLoaderManager classLoaderManager;
+
     protected static String LoadingApp;
 
     protected static String getPlugin;
@@ -30,10 +33,11 @@ public class PluginLoader implements Loader {
     protected String PluginName;
 
     private Server server;
-    public PluginLoader(Server server, String AppName) {
+    public PluginLoader(Server server, String AppName, ClassLoaderManager classLoaderManager) {
         // this.AppName = AppName;
         //this.description = loadDescription();
         this.server = server;
+        this.classLoaderManager = classLoaderManager;
     }
 
 
@@ -95,7 +99,9 @@ public class PluginLoader implements Loader {
                     String jarFix = strArray[suffixIndex];
                     if (jarFix.equals("jar")) {
                         try {
-                            PluginClassLoader pcl = new PluginClassLoader(this,this.getClass().getClassLoader(), new File(RunPath + "plugins/" + s));
+                            File pluginFile = new File(RunPath + "plugins/"+s);
+                            String hashCode = classLoaderManager.createURLClassLoader(pluginFile);
+                            URLClassLoader urlClassLoader = (URLClassLoader) classLoaderManager.getClassLoader(hashCode);
 
                             Description description = getDescription(new JarFile(RunPath + "plugins/" + s));
 
@@ -104,23 +110,14 @@ public class PluginLoader implements Loader {
                                 continue;
                             }
                             String mainClass = description.getMain();
-//                            Class<PluginBase> clazz = (Class<PluginBase>) Class.forName(mainClass, true, new URLClassLoader(new URL[]{new File(RunPath + "plugins/" + s).toURI().toURL()}));
-//                            ClassLoader sc = ClassLoader.getSystemClassLoader();
+                            Class<PluginBase> pluginClass = (Class<PluginBase>) urlClassLoader.loadClass(mainClass);
+                           // Log.sendLog(loadClass.getResource("/").toString());
 
-                            Class loadClass = pcl.loadClass(mainClass);
-
-
-//                           clazz.getConstructor().newInstance().onEnable();
-
-                            Log.sendLog(loadClass.getResource("/").toString());
-                            Class<PluginBase> pluginClass = (Class<PluginBase>) loadClass.asSubclass(PluginBase.class);
                             PluginBase plugin = pluginClass.getConstructor().newInstance();
                             plugin.setDescription(description);
                             plugin.PluginName = description.getName();
                             res.put(description.getName(), plugin);
-                            ClassManager classManager = new ClassManager();
-                            Set<Class<?>> set = classManager.getClasses("cn.pamalee.nucleus.simpleplugin",new JarFile(RunPath + "plugins/" + s),s);
-                            Log.sendLog(set.toString());
+                           // Log.sendLog(set.toString());
                             // plugin.onLoad();
                         } catch (IOException e) {
                             Log.sendWarn(Server.getInstance().TranslateOne("Plugin.JarCanNotOpen", s));
