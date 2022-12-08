@@ -2,7 +2,7 @@ package cn.devspace.nucleus.Plugin;
 
 import cn.devspace.nucleus.Manager.AnnotationManager;
 import cn.devspace.nucleus.Manager.BeanManager;
-import cn.devspace.nucleus.Manager.Router;
+import cn.devspace.nucleus.Manager.RouterBase;
 import cn.devspace.nucleus.Message.Log;
 import cn.devspace.nucleus.Server.Server;
 import org.springframework.core.io.ClassPathResource;
@@ -59,7 +59,7 @@ public class AppLoader implements Loader {
                     String main = appDes.getMain();
                     Class<?> c = Class.forName(main);
                     AppBase app = (AppBase) c.getDeclaredConstructor().newInstance();
-                    Map<Map<String, String>, Class<?>> maps = AnnotationManager.getRouterAnnotation((Class<Router>) c);
+                    Map<Map<String, String>, Class<?>> maps = AnnotationManager.getRouterAnnotation((Class<RouterBase>) c);
                     Server.RouterList.put(apps, maps);
                     app.setDescription(appDes);
                     Log.AppStart(Server.getInstance().Translators("App.Start", apps));

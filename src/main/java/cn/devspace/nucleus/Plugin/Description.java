@@ -14,7 +14,7 @@ public class Description {
     private String description;
     private String dbName;
     private String dbType;
-    private String route;
+    private String route = null;
 
     public Description(String YamlString) {
         Yaml yml = new Yaml();
@@ -69,6 +69,9 @@ public class Description {
     }
 
     public String getRoute() {
+        if (this.route == null){
+            return this.getName();
+        }
         return this.route;
     }
 }

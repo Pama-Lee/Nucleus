@@ -1,4 +1,4 @@
 package cn.devspace.nucleus.Manager;
 
-public interface Router {
+public interface RouterBase {
 }

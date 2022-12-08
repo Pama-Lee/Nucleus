@@ -35,7 +35,7 @@ public class RouteManager extends ManagerBase {
     }
 
 
-    public static void registerRouter(Loader loader, String routeName, Class<Router> classes) {
+    public static void registerRouter(Loader loader, String routeName, Class<RouterBase> classes) {
         Map<Map<String, String>, Class<?>> maps = AnnotationManager.getRouterAnnotation(classes);
         Server.RouterList.put(routeName, maps);
     }
