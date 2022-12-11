@@ -12,7 +12,13 @@ import java.util.Map;
 
 abstract public class PluginBase extends ManagerBase implements Loader {
 
-    protected static LangBase AppLang = null;
+    private LangBase PluginLang = null;
+
+    private boolean isLoaded = false;
+
+    private boolean isEnable = false;
+
+    private boolean isEnabled = false;
 
     protected Description description;
 
@@ -36,7 +42,11 @@ abstract public class PluginBase extends ManagerBase implements Loader {
 
     protected void initRoute(Class<?> classes) {
         Map<Map<String, String>, Class<?>> maps = AnnotationManager.getRouterAnnotation(classes);
-        Server.RouterList.put(getDescription().getRoute(), maps);
+        if (!Server.RouterList.get(getDescription().getRoute()).isEmpty()){
+            for(Map<String,String> temp:maps.keySet()){
+                Server.RouterList.get(getDescription().getRoute()).put(temp,maps.get(temp));
+            }
+        }
         Server.PluginRoute.put(getDescription().getRoute(), PluginName);
     }
 
@@ -50,7 +60,7 @@ abstract public class PluginBase extends ManagerBase implements Loader {
         try {
             InputStream langStream = new ClassPathResource("app/" + this.PluginName + "/Language/" + language + ".ini").getInputStream();
             LangBase lb = new LangBase(langStream);
-            AppLang = lb;
+            PluginLang = lb;
             return lb;
         } catch (Exception e) {
             Log.sendWarn(e.toString());
@@ -64,18 +74,30 @@ abstract public class PluginBase extends ManagerBase implements Loader {
         description = des;
     }
 
+    public void setPluginLang(LangBase langBase){this.PluginLang = langBase;}
+
     public Description getDescription() {
         return description;
     }
 
 
-    protected String Translation(String key, Object... params) {
-        return TranslateOne(key, params);
+    protected String translateMessage(String key, Object... params) {
+        return Translator(key, params);
     }
 
-    protected String Translation(String key, String[] param) {
-        return TranslateOne(key, param);
+    protected String translateMessage(String key, String[] param) {
+        return Translator(key, (Object) param);
     }
+
+    private String Translator(String key, Object... params){
+        if (this.PluginLang == null){
+            Log.sendWarn("Don't exist any language config");
+            return null;
+        }else{
+           return this.PluginLang.TranslateOne(key,params);
+        }
+    }
+
 
     public void localPlugin(String PluginName) {
         this.PluginName = PluginName;
@@ -90,9 +112,37 @@ abstract public class PluginBase extends ManagerBase implements Loader {
 
     }
 
+    public void setLoaded(){
+        this.isLoaded = true;
+    }
+
+    public void setDisable(){
+        this.isLoaded = false;
+    }
+
+    public boolean getStatus(){
+        return this.isLoaded;
+    }
+
     @Override
     public String getName() {
         return PluginName;
+    }
+
+    public boolean isEnable() {
+        return isEnable;
+    }
+
+    public void setEnable(boolean enable) {
+        isEnable = enable;
+    }
+
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        isEnabled = enabled;
     }
 }
 

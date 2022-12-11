@@ -8,6 +8,7 @@ import cn.devspace.nucleus.Server.Server;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 
 /**
@@ -42,6 +43,21 @@ public class RouteManager extends ManagerBase {
 
     public String getLanguage() {
         return new SettingManager().getSetting("app.language");
+    }
+
+    /**
+     * 判断传入的参数是否包含所需参数
+     * @param maps 传入参数
+     * @param params 需要包含的参数
+     * @return 返回正确与否
+     */
+    public boolean checkParams(Map<String,String> maps, String[] params){
+        for (String param : params) {
+            if(!maps.containsKey(param)){
+                return false;
+            }
+        }
+        return true;
     }
 
 

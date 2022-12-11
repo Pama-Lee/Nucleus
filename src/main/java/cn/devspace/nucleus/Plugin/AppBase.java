@@ -10,6 +10,7 @@ import cn.devspace.nucleus.Server.Server;
 import org.springframework.core.io.ClassPathResource;
 
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Map;
 
 
@@ -40,7 +41,11 @@ abstract public class AppBase extends ManagerBase {
 
     protected void initRoute(Class<?> classes) {
         Map<Map<String, String>, Class<?>> maps = AnnotationManager.getRouterAnnotation(classes);
-        Server.RouterList.put(getDescription().getRoute(), maps);
+        if (!Server.RouterList.get(getDescription().getRoute()).isEmpty()){
+            for(Map<String,String> temp:maps.keySet()){
+                Server.RouterList.get(getDescription().getRoute()).put(temp,maps.get(temp));
+            }
+        }
         Server.PluginRoute.put(getDescription().getRoute(), AppName);
     }
 

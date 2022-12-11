@@ -39,8 +39,8 @@ public class DataBase {
         return sessionMap.get(name);
     }
 
-    public Session newSession(String name){
-        Session session = concreteSessionFactory.openSession();
+    public Session newSession(String name,Class<?> clazz,DataEntity dataEntity){
+        Session session = initDatabase(clazz,dataEntity,null);
         sessionMap.put(name,session);
         return session;
     }

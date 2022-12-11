@@ -1,9 +1,11 @@
 package cn.devspace.nucleus.Plugin;
 
+import cn.devspace.nucleus.Lang.LangBase;
 import cn.devspace.nucleus.Manager.ClassLoaderManager;
 import cn.devspace.nucleus.Manager.ClassManager;
 import cn.devspace.nucleus.Message.Log;
 import cn.devspace.nucleus.Server.Server;
+import org.apache.tomcat.Jar;
 import org.springframework.core.io.ClassPathResource;
 
 import java.io.File;
@@ -34,20 +36,8 @@ public class PluginLoader implements Loader {
 
     private Server server;
     public PluginLoader(Server server, String AppName, ClassLoaderManager classLoaderManager) {
-        // this.AppName = AppName;
-        //this.description = loadDescription();
         this.server = server;
         this.classLoaderManager = classLoaderManager;
-    }
-
-
-    public Description loadDescription() {
-        try {
-            return new Description(new ClassPathResource("app/" + this.PluginName + "/app.yml").getInputStream());
-        } catch (IOException ioe) {
-            Log.sendError(ioe.toString(), 2);
-            return null;
-        }
     }
 
     public static Map<String, JarFile> getPluginJars() {
@@ -102,9 +92,22 @@ public class PluginLoader implements Loader {
                             File pluginFile = new File(RunPath + "plugins/"+s);
                             String hashCode = classLoaderManager.createURLClassLoader(pluginFile);
                             URLClassLoader urlClassLoader = (URLClassLoader) classLoaderManager.getClassLoader(hashCode);
-
-                            Description description = getDescription(new JarFile(RunPath + "plugins/" + s));
-
+                            JarFile pluginJar = new JarFile(RunPath + "plugins/" + s);
+                            Description description = getDescription(pluginJar);
+                            String lang = Server.getInstance().Language;
+                            LangBase langBase = null;
+                            //当存在语言文件时
+                            if (description.getLanguage()!= null){
+                                JarEntry jarEntry = pluginJar.getJarEntry("language/"+lang+".ini");
+                                if (jarEntry == null){
+                                    JarEntry defaultLang = pluginJar.getJarEntry("language/"+description.getLanguage()+".ini");
+                                    if (defaultLang != null){
+                                        langBase = new LangBase(pluginJar.getInputStream(defaultLang));
+                                    }
+                                }else {
+                                    langBase = new LangBase(pluginJar.getInputStream(jarEntry));
+                                }
+                            }
                             if (description == null) {
                                 Log.sendWarn("没有配置文件");
                                 continue;
@@ -114,6 +117,9 @@ public class PluginLoader implements Loader {
                            // Log.sendLog(loadClass.getResource("/").toString());
 
                             PluginBase plugin = pluginClass.getConstructor().newInstance();
+                            if (langBase!=null){
+                                plugin.setPluginLang(langBase);
+                            }
                             plugin.setDescription(description);
                             plugin.PluginName = description.getName();
                             res.put(description.getName(), plugin);

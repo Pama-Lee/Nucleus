@@ -165,11 +165,15 @@ public class Server extends ManagerBase {
             for (String plugin : PluginList.keySet()) {
                 cPlugin = plugin;
                 PluginBase pluginBase = PluginList.get(plugin);
-                pluginBase.onLoad();
+               if (!pluginBase.getStatus()){
+                   pluginBase.onLoad();
+                   pluginBase.setLoaded();
+               }
             }
         }catch (Exception e){
             Log.sendWarn(TranslateOne("Plugin.LoadError",cPlugin,e.toString()));
             disablePlugin(cPlugin);
+            LoadPlugin();
         }
 
     }
@@ -180,11 +184,15 @@ public class Server extends ManagerBase {
             for (String plugin : PluginList.keySet()) {
                 cPlugin = plugin;
                 PluginBase pluginBase = PluginList.get(plugin);
-                pluginBase.onEnable();
+                if (!pluginBase.isEnable()){
+                    pluginBase.onEnable();
+                    pluginBase.setEnable(true);
+                }
             }
         }catch (Exception e){
             Log.sendWarn(TranslateOne("Plugin.EnableError",cPlugin,e.toString()));
             disablePlugin(cPlugin);
+            EnablePlugin();
         }
 
     }
@@ -195,11 +203,15 @@ public class Server extends ManagerBase {
             for (String plugin : PluginList.keySet()) {
                 cPlugin = plugin;
                 PluginBase pluginBase = PluginList.get(plugin);
-                pluginBase.onEnabled();
+                if (!pluginBase.isEnabled()){
+                    pluginBase.onEnabled();
+                    pluginBase.setEnabled(true);
+                }
             }
         }catch (Exception e){
             Log.sendWarn(TranslateOne("Plugin.EnabledError",cPlugin,e.toString()));
             disablePlugin(cPlugin);
+            EnabledPlugin();
         }
     }
 

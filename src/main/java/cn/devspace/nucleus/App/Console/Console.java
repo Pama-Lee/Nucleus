@@ -24,7 +24,7 @@ public class Console extends AppBase implements CommandBase {
 
     @Commands(Command = "test")
     public String test(String[] args){
-        Log.sendLog(Server.classLoaderManager.getClassLoaderMap().toString());
+        Log.sendLog(Server.RouterList.toString());
         return null;
     }
 
