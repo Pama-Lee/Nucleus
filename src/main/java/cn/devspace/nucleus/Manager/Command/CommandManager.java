@@ -16,8 +16,6 @@ public class CommandManager {
 
     public static void ConsoleSupport(String command) {
         if (checkCommandStyle(command) && checkCommand(command)) {
-            String[] commands = command.split(" ");
-
             try {
                 Set<CommandBase> c = Server.CommandMap.get(getCommandBody(command)).keySet();
                 for (CommandBase cb : c) {
@@ -35,6 +33,18 @@ public class CommandManager {
 
     public static void registerCommand(CommandBase CB) {
         Map<String, String> map = AnnotationManager.getCommandsAnnotation(CB.getClass());
+        Map<String,String> helpMessage = AnnotationManager.getCommandsHelpMessage(CB.getClass());
+        if (Server.CommandHelpMessage.size()>0){
+            for (String command : helpMessage.keySet()){
+                if (!Server.CommandHelpMessage.get(command).isEmpty()){
+                    Server.CommandHelpMessage.remove(command);
+                    Server.CommandHelpMessage.put(command,helpMessage.get(command));
+                }
+                Server.CommandHelpMessage.put(command,helpMessage.get(command));
+            }
+        }else {
+            Server.CommandHelpMessage = helpMessage;
+        }
         for (String method : map.keySet()) {
             try {
                 Map<CommandBase, Method> min = new HashMap<>();

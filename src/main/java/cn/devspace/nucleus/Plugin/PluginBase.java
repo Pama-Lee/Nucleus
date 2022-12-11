@@ -42,10 +42,12 @@ abstract public class PluginBase extends ManagerBase implements Loader {
 
     protected void initRoute(Class<?> classes) {
         Map<Map<String, String>, Class<?>> maps = AnnotationManager.getRouterAnnotation(classes);
-        if (!Server.RouterList.get(getDescription().getRoute()).isEmpty()){
+        if (Server.RouterList.get(getDescription().getRoute()) != null){
             for(Map<String,String> temp:maps.keySet()){
                 Server.RouterList.get(getDescription().getRoute()).put(temp,maps.get(temp));
             }
+        }else {
+            Server.RouterList.put(getDescription().getRoute(),maps);
         }
         Server.PluginRoute.put(getDescription().getRoute(), PluginName);
     }

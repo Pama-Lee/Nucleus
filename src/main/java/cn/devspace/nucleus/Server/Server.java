@@ -48,6 +48,8 @@ public class Server extends ManagerBase {
     public static Map<String, String> PluginRoute = new HashMap<>();
     public static Map<String, Map<CommandBase, Method>> CommandMap = new HashMap<>();
 
+    public static Map<String,String> CommandHelpMessage = new HashMap<>();
+
     @Resource
     public BeanManager beanManager;
 
@@ -114,18 +116,29 @@ public class Server extends ManagerBase {
 
         String classLoaderPluginHash = classLoaderManager.createClassLoader();
 
+        AppLoader.loadApps(this);
+        EnableApp();
+        initPlugins(false);
+        Log.sendLog(TranslateOne("App.Run.UseMemory", getUsedMemory()));
+    }
+
+    public void initPlugins(boolean reload){
+        if (reload){
+            for (String key: PluginRoute.keySet()){
+                if (PluginList.containsKey(PluginRoute.get(key))){
+                    PluginRoute.remove(key);
+                    initPlugins(true);
+                    return;
+                }
+
+            }
+
+        }
 
         PluginLoader pL = new PluginLoader(this, null,classLoaderManager);
         PluginList = pL.getPlugins();
-
-        AppLoader.loadApps(this);
         LoadPlugin();
-
-        Log.sendLog(TranslateOne("App.Run.UseMemory", getUsedMemory()));
-        EnableApp();
         EnablePlugin();
-        //ConsoleManager con = new ConsoleManager();
-        //Log.sendLog(CommandMap.toString());
     }
 
     private void EnableApp() {

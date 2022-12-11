@@ -39,5 +39,16 @@ public class AnnotationManager {
         }
         return res;
     }
+    public static Map<String, String> getCommandsHelpMessage(Class<?> classes) {
+        Method[] methods = classes.getMethods();
+        Map<String, String> res = new HashMap<>();
+        for (Method method : methods) {
+            Commands commands = method.getAnnotation(Commands.class);
+            if (commands != null) {
+                res.put(commands.Command(), commands.help());
+            }
+        }
+        return res;
+    }
 
 }

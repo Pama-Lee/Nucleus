@@ -42,9 +42,12 @@ abstract public class AppBase extends ManagerBase {
     protected void initRoute(Class<?> classes) {
         Map<Map<String, String>, Class<?>> maps = AnnotationManager.getRouterAnnotation(classes);
         if (!Server.RouterList.get(getDescription().getRoute()).isEmpty()){
+           // Log.sendLog(Server.RouterList.toString());
             for(Map<String,String> temp:maps.keySet()){
                 Server.RouterList.get(getDescription().getRoute()).put(temp,maps.get(temp));
             }
+        }else {
+            Server.RouterList.put(getDescription().getRoute(),maps);
         }
         Server.PluginRoute.put(getDescription().getRoute(), AppName);
     }
