@@ -6,6 +6,7 @@ import cn.devspace.nucleus.Manager.ManagerBase;
 import cn.devspace.nucleus.Message.Log;
 import cn.devspace.nucleus.Server.Server;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.util.DigestUtils;
 
 import java.io.InputStream;
 import java.util.Map;
@@ -23,6 +24,8 @@ abstract public class PluginBase extends ManagerBase implements Loader {
     protected Description description;
 
     protected String PluginName;
+
+    private String key;
 
     public PluginBase() {
 
@@ -101,8 +104,9 @@ abstract public class PluginBase extends ManagerBase implements Loader {
     }
 
 
-    public void localPlugin(String PluginName) {
-        this.PluginName = PluginName;
+    public void setPluginName(String name){
+        this.PluginName = name;
+        this.key =  DigestUtils.md5DigestAsHex((String.valueOf(System.currentTimeMillis())+name+Server.getServerVersion()).getBytes());
     }
 
     protected String getLocalPlugin() {
@@ -146,5 +150,10 @@ abstract public class PluginBase extends ManagerBase implements Loader {
     public void setEnabled(boolean enabled) {
         isEnabled = enabled;
     }
+
+    public String getKey(){
+        return this.key;
+    }
+
 }
 

@@ -8,6 +8,7 @@ import cn.devspace.nucleus.Manager.ManagerBase;
 import cn.devspace.nucleus.Message.Log;
 import cn.devspace.nucleus.Server.Server;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.util.DigestUtils;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -22,6 +23,8 @@ abstract public class AppBase extends ManagerBase {
     protected Description description;
 
     protected String AppName;
+
+    private String key;
 
     public AppBase() {
 
@@ -110,6 +113,11 @@ abstract public class AppBase extends ManagerBase {
 
     public void localApp(String AppName) {
         this.AppName = AppName;
+        this.key = DigestUtils.md5DigestAsHex((String.valueOf(System.currentTimeMillis())+AppName+Server.getServerVersion()).getBytes());
+    }
+
+    public String getKey(){
+        return this.key;
     }
 
     protected String getLocalApp() {

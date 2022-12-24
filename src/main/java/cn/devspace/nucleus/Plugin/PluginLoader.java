@@ -121,7 +121,7 @@ public class PluginLoader implements Loader {
                                 plugin.setPluginLang(langBase);
                             }
                             plugin.setDescription(description);
-                            plugin.PluginName = description.getName();
+                            plugin.setPluginName(description.getName());
                             res.put(description.getName(), plugin);
                            // Log.sendLog(set.toString());
                             // plugin.onLoad();

@@ -56,8 +56,16 @@ public class RouteManager extends ManagerBase {
             if(!maps.containsKey(param)){
                 return false;
             }
+            // 防注入
+            maps.replace(param,regReplace(maps.get(param)));
         }
         return true;
+    }
+
+    // 对特殊符号替换
+    public static String regReplace(String str) {
+        String s = str.replaceAll("[\\\\\\*/\"']", "");
+        return s;
     }
 
 
