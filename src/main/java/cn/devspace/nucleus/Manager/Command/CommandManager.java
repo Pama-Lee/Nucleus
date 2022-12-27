@@ -36,7 +36,7 @@ public class CommandManager {
         Map<String,String> helpMessage = AnnotationManager.getCommandsHelpMessage(CB.getClass());
         if (Server.CommandHelpMessage.size()>0){
             for (String command : helpMessage.keySet()){
-                if (!Server.CommandHelpMessage.get(command).isEmpty()){
+                if (!Server.CommandHelpMessage.containsKey(command)){
                     Server.CommandHelpMessage.remove(command);
                     Server.CommandHelpMessage.put(command,helpMessage.get(command));
                 }

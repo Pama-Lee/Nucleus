@@ -41,10 +41,8 @@ public class Request extends HttpServlet {
                             app = Server.PluginRoute.get(app);
                             return toRoute(method, AppRouters,null);
                         }
-                    } catch (IllegalAccessException | InvocationTargetException e) {
-                        Log.sendWarn(e.toString());
-                    } catch (NoSuchMethodException | InstantiationException e) {
-                        Log.sendWarn(e.toString());
+                    } catch (Exception e){
+                        Log.sendWarn(e.getStackTrace()[0].toString());
                     }
                 }
             }
@@ -74,9 +72,7 @@ public class Request extends HttpServlet {
                             app = Server.PluginRoute.get(app);
                             return toRoute(method, AppRouters,params);
                         }
-                    } catch (IllegalAccessException | InvocationTargetException e) {
-                        Log.sendWarn(e.toString());
-                    } catch (NoSuchMethodException | InstantiationException e) {
+                    } catch (Exception e){
                         Log.sendWarn(e.toString());
                     }
                 }
@@ -86,17 +82,22 @@ public class Request extends HttpServlet {
     }
 
 
-    private Object toRoute(Map<String, String> method, Map<Map<String, String>, Class<?>> appRouters,Map<String,String> json) throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+    private Object toRoute(Map<String, String> method, Map<Map<String, String>, Class<?>> appRouters,Map<String,String> json) {
         //当为GET请求时
         if (json == null){
             json = new HashMap<>();
         }
-        Method methods = appRouters.get(method).getMethod(method.get("M"), Map.class);
-        Object m = methods.invoke(appRouters.get(method).getConstructor().newInstance(), json);
-        if (m != null) {
-            return m;
-        } else {
-            return null;
+        try {
+            Method methods = appRouters.get(method).getMethod(method.get("M"), Map.class);
+            Object m = methods.invoke(appRouters.get(method).getConstructor().newInstance(), json);
+            if (m != null) {
+                return m;
+            } else {
+                return null;
+            }
+        }catch (Exception e){
+            Log.sendWarn(e.getStackTrace()[0].toString());
         }
+       return null;
     }
 }

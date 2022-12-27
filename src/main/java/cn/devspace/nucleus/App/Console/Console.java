@@ -18,7 +18,7 @@ public class Console extends AppBase implements CommandBase {
     @Commands(Command = "help",help = "/help [页数] 查看服务器所有指令")
     public String help(String[] args) {
         int page = 0;
-        int helps = 5;
+        int helps = 20;
         if (args != null){
             page = Integer.parseInt(args[0]);
         }else {
@@ -42,7 +42,7 @@ public class Console extends AppBase implements CommandBase {
         }
         Log.sendLog("===========================");
         Log.sendLog("输入[/help 页数]访问其他帮助信息,例如输入/help 2");
-        sendLog("参数:" + Arrays.toString(args));
+        //sendLog("参数:" + Arrays.toString(args));
         return "123";
     }
 

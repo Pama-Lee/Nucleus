@@ -76,6 +76,7 @@ public class Server extends ManagerBase {
 
         currentThread = Thread.currentThread();
         Instance = this;
+
     }
 
     /**
@@ -130,11 +131,8 @@ public class Server extends ManagerBase {
                     initPlugins(true);
                     return;
                 }
-
             }
-
         }
-
         PluginLoader pL = new PluginLoader(this, null,classLoaderManager);
         PluginList = pL.getPlugins();
         LoadPlugin();
@@ -150,7 +148,7 @@ public class Server extends ManagerBase {
                 appClass.onEnable();
             }
         }catch (Exception e){
-            Log.sendWarn(TranslateOne("App.EnableError",cApp,e.toString()));
+            Log.sendWarn(TranslateOne("App.EnableError",cApp,e.getMessage()));
             disableApp(cApp);
         }
 
@@ -166,7 +164,7 @@ public class Server extends ManagerBase {
                 appClass.onEnabled();
             }
         }catch (Exception e){
-            Log.sendWarn(TranslateOne("App.EnabledError",cApp,e.toString()));
+            Log.sendWarn(TranslateOne("App.EnabledError",cApp,e.getMessage()));
             disableApp(cApp);
         }
 
@@ -184,7 +182,7 @@ public class Server extends ManagerBase {
                }
             }
         }catch (Exception e){
-            Log.sendWarn(TranslateOne("Plugin.LoadError",cPlugin,e.toString()));
+            Log.sendWarn(TranslateOne("Plugin.LoadError",cPlugin,e.getMessage()+" where->"+e.getStackTrace()[0]));
             disablePlugin(cPlugin);
             LoadPlugin();
         }
@@ -203,7 +201,7 @@ public class Server extends ManagerBase {
                 }
             }
         }catch (Exception e){
-            Log.sendWarn(TranslateOne("Plugin.EnableError",cPlugin,e.toString()));
+            Log.sendWarn(TranslateOne("Plugin.EnableError",cPlugin,e.getMessage()));
             disablePlugin(cPlugin);
             EnablePlugin();
         }
@@ -222,7 +220,7 @@ public class Server extends ManagerBase {
                 }
             }
         }catch (Exception e){
-            Log.sendWarn(TranslateOne("Plugin.EnabledError",cPlugin,e.toString()));
+            Log.sendWarn(TranslateOne("Plugin.EnabledError",cPlugin,e.getMessage()));
             disablePlugin(cPlugin);
             EnabledPlugin();
         }
