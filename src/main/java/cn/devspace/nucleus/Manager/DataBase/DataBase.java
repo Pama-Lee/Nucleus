@@ -2,7 +2,6 @@ package cn.devspace.nucleus.Manager.DataBase;
 
 import cn.devspace.nucleus.Message.Log;
 import cn.devspace.nucleus.Plugin.DataEntity;
-import cn.devspace.nucleus.Server.Server;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.BootstrapServiceRegistry;
@@ -31,18 +30,39 @@ public class DataBase {
         this.session = session1;
     }
 
+    /**
+     * 获取到当前DataBase默认的Session
+     * @return
+     */
     public Session getSession(){
         return this.session;
     }
 
+    /**
+     * 获取到由当前DataBase管理的特定名字的Session
+     * @param name
+     * @return
+     */
     public Session getSession(String name){
-        return sessionMap.get(name);
+        return session =  sessionMap.get(name);
     }
 
+    /**
+     * 通过传入名称创建一个新Session
+     * @param name
+     * @param clazz
+     * @param dataEntity
+     * @return
+     */
     public Session newSession(String name,Class<?> clazz,DataEntity dataEntity){
-        Session session = initDatabase(clazz,dataEntity,null);
-        sessionMap.put(name,session);
-        return session;
+        Session session = getSession(name);
+        if (session == null){
+            Session session_new = initDatabase(clazz,dataEntity,null);
+            sessionMap.put(name,session_new);
+            return session_new;
+        }else {
+            return session;
+        }
     }
 
     public static Session initDatabase(Class<?> clazz,DataEntity dataEntity,Properties properties) {

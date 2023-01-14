@@ -8,7 +8,8 @@ import cn.devspace.nucleus.Message.Log;
 import cn.devspace.nucleus.Plugin.AppBase;
 import cn.devspace.nucleus.Server.Server;
 
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import static cn.devspace.nucleus.Server.Server.*;
 
@@ -95,5 +96,6 @@ public class Console extends AppBase implements CommandBase {
         ConsoleThread CT = new ConsoleThread();
         CT.start();
         sendLog("你可以输入命令,命令以\"/\"开始,您可以输入/help查看帮助");
+
     }
 }
