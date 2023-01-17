@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -17,15 +18,17 @@ import java.util.Set;
 @CrossOrigin
 public class Request extends HttpServlet {
     @GetMapping("/App/**")
-    public String Router(HttpServletRequest request) {
+    public Object Router(HttpServletRequest request) {
         Map<String, Map<Map<String, String>, Class<?>>> router = Server.RouterList;
         Set<String> map = router.keySet();
+       // Log.sendLog(map.toString());
         for (String app : map) {
             for (Map<String, String> method : router.get(app).keySet()) {
+               // Log.sendLog(router.get(app).keySet().toString());
                 Map<Map<String, String>, Class<?>> AppRouters = router.get(app);
                 String ReqURI = request.getRequestURI();
                 // Log.sendLog(ReqURI);
-                // Log.sendLog("/App/" + app + "/" + method.get("R"));
+                 //Log.sendLog("/App/" + app + "/" + method.get("R"));
                 if (ReqURI.equals("/App/" + app + "/" + method.get("R"))) {
                     try {
                         AppBase ab = Server.AppList.get(app);
@@ -38,10 +41,8 @@ public class Request extends HttpServlet {
                             app = Server.PluginRoute.get(app);
                             return toRoute(method, AppRouters,null);
                         }
-                    } catch (IllegalAccessException | InvocationTargetException e) {
-                        Log.sendWarn(e.toString());
-                    } catch (NoSuchMethodException | InstantiationException e) {
-                        Log.sendWarn(e.toString());
+                    } catch (Exception e){
+                        Log.sendWarn(e.getStackTrace()[0].toString());
                     }
                 }
             }
@@ -50,7 +51,7 @@ public class Request extends HttpServlet {
     }
 
     @PostMapping("/App/**")
-    public String Router(@RequestBody String[] params,HttpServletRequest httpServletRequest){
+    public Object Router(@RequestBody Map<String,String> params,HttpServletRequest httpServletRequest){
         Map<String, Map<Map<String, String>, Class<?>>> router = Server.RouterList;
         Set<String> map = router.keySet();
         for (String app : map) {
@@ -71,9 +72,7 @@ public class Request extends HttpServlet {
                             app = Server.PluginRoute.get(app);
                             return toRoute(method, AppRouters,params);
                         }
-                    } catch (IllegalAccessException | InvocationTargetException e) {
-                        Log.sendWarn(e.toString());
-                    } catch (NoSuchMethodException | InstantiationException e) {
+                    } catch (Exception e){
                         Log.sendWarn(e.toString());
                     }
                 }
@@ -83,40 +82,22 @@ public class Request extends HttpServlet {
     }
 
 
-    private String toRoute(Map<String, String> method, Map<Map<String, String>, Class<?>> appRouters,String[] json) throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
-
-        Method methods = appRouters.get(method).getMethod(method.get("M"));
-        Object doMethod = appRouters.get(method).getConstructor().newInstance();
-        Object m = methods.invoke(doMethod,(Object) json);
-        if (m != null) {
-            return m.toString();
-        } else {
-            return null;
+    private Object toRoute(Map<String, String> method, Map<Map<String, String>, Class<?>> appRouters,Map<String,String> json) {
+        //当为GET请求时
+        if (json == null){
+            json = new HashMap<>();
         }
-    }
-
-/*
-    @GetMapping("/{route}/{method}")
-    public String Requests_GET(@PathVariable("route") String route, @PathVariable("method") String method,@RequestParam Map<String, String> map) {
-        if (!map.isEmpty()){
-            return new Router(route,method).start(route,method,map);
+        try {
+            Method methods = appRouters.get(method).getMethod(method.get("M"), Map.class);
+            Object m = methods.invoke(appRouters.get(method).getConstructor().newInstance(), json);
+            if (m != null) {
+                return m;
+            } else {
+                return null;
+            }
+        }catch (Exception e){
+            Log.sendWarn(e.getStackTrace()[0].toString());
         }
-        return new Router(route, method).start(route, method);
+       return null;
     }
-
-    @PostMapping("/{route}/{method}")
-    public String Requests_POST(@PathVariable("route") String route, @PathVariable("method") String method,@RequestBody Map<String, String> map) {
-        if (map != null){
-            return new Router(route,method).start(route,method,map);
-        }
-        return new Router(route, method).start(route, method);
-    }
-    @GetMapping("/")
-    public String index(){
-        return "<h1 style='color:orange'>Welcome to Use nucleus!</h1>";
-    }
-
-
-
-*/
 }

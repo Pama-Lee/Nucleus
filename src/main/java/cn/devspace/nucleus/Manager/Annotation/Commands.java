@@ -15,4 +15,6 @@ public @interface Commands {
 
     @AliasFor(attribute = "value")
     String Command() default "";
+
+    String help() default "without help message";
 }

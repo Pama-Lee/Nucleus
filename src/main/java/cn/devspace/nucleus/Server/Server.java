@@ -48,6 +48,8 @@ public class Server extends ManagerBase {
     public static Map<String, String> PluginRoute = new HashMap<>();
     public static Map<String, Map<CommandBase, Method>> CommandMap = new HashMap<>();
 
+    public static Map<String,String> CommandHelpMessage = new HashMap<>();
+
     @Resource
     public BeanManager beanManager;
 
@@ -74,6 +76,7 @@ public class Server extends ManagerBase {
 
         currentThread = Thread.currentThread();
         Instance = this;
+
     }
 
     /**
@@ -114,18 +117,26 @@ public class Server extends ManagerBase {
 
         String classLoaderPluginHash = classLoaderManager.createClassLoader();
 
+        AppLoader.loadApps(this);
+        EnableApp();
+        initPlugins(false);
+        Log.sendLog(TranslateOne("App.Run.UseMemory", getUsedMemory()));
+    }
 
+    public void initPlugins(boolean reload){
+        if (reload){
+            for (String key: PluginRoute.keySet()){
+                if (PluginList.containsKey(PluginRoute.get(key))){
+                    PluginRoute.remove(key);
+                    initPlugins(true);
+                    return;
+                }
+            }
+        }
         PluginLoader pL = new PluginLoader(this, null,classLoaderManager);
         PluginList = pL.getPlugins();
-
-        AppLoader.loadApps(this);
         LoadPlugin();
-
-        Log.sendLog(TranslateOne("App.Run.UseMemory", getUsedMemory()));
-        EnableApp();
         EnablePlugin();
-        //ConsoleManager con = new ConsoleManager();
-        //Log.sendLog(CommandMap.toString());
     }
 
     private void EnableApp() {
@@ -137,7 +148,7 @@ public class Server extends ManagerBase {
                 appClass.onEnable();
             }
         }catch (Exception e){
-            Log.sendWarn(TranslateOne("App.EnableError",cApp,e.toString()));
+            Log.sendWarn(TranslateOne("App.EnableError",cApp,e.getMessage()));
             disableApp(cApp);
         }
 
@@ -153,7 +164,7 @@ public class Server extends ManagerBase {
                 appClass.onEnabled();
             }
         }catch (Exception e){
-            Log.sendWarn(TranslateOne("App.EnabledError",cApp,e.toString()));
+            Log.sendWarn(TranslateOne("App.EnabledError",cApp,e.getMessage()));
             disableApp(cApp);
         }
 
@@ -165,11 +176,15 @@ public class Server extends ManagerBase {
             for (String plugin : PluginList.keySet()) {
                 cPlugin = plugin;
                 PluginBase pluginBase = PluginList.get(plugin);
-                pluginBase.onLoad();
+               if (!pluginBase.getStatus()){
+                   pluginBase.onLoad();
+                   pluginBase.setLoaded();
+               }
             }
         }catch (Exception e){
-            Log.sendWarn(TranslateOne("Plugin.LoadError",cPlugin,e.toString()));
+            Log.sendWarn(TranslateOne("Plugin.LoadError",cPlugin,e.getMessage()+" where->"+e.getStackTrace()[0]));
             disablePlugin(cPlugin);
+            LoadPlugin();
         }
 
     }
@@ -180,11 +195,15 @@ public class Server extends ManagerBase {
             for (String plugin : PluginList.keySet()) {
                 cPlugin = plugin;
                 PluginBase pluginBase = PluginList.get(plugin);
-                pluginBase.onEnable();
+                if (!pluginBase.isEnable()){
+                    pluginBase.onEnable();
+                    pluginBase.setEnable(true);
+                }
             }
         }catch (Exception e){
-            Log.sendWarn(TranslateOne("Plugin.EnableError",cPlugin,e.toString()));
+            Log.sendWarn(TranslateOne("Plugin.EnableError",cPlugin,e.getMessage()));
             disablePlugin(cPlugin);
+            EnablePlugin();
         }
 
     }
@@ -195,11 +214,15 @@ public class Server extends ManagerBase {
             for (String plugin : PluginList.keySet()) {
                 cPlugin = plugin;
                 PluginBase pluginBase = PluginList.get(plugin);
-                pluginBase.onEnabled();
+                if (!pluginBase.isEnabled()){
+                    pluginBase.onEnabled();
+                    pluginBase.setEnabled(true);
+                }
             }
         }catch (Exception e){
-            Log.sendWarn(TranslateOne("Plugin.EnabledError",cPlugin,e.toString()));
+            Log.sendWarn(TranslateOne("Plugin.EnabledError",cPlugin,e.getMessage()));
             disablePlugin(cPlugin);
+            EnabledPlugin();
         }
     }
 

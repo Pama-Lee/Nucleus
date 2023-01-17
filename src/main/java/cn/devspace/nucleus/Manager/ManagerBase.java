@@ -17,7 +17,7 @@ public class ManagerBase extends LangBase {
      * @param Map 传入Map数据
      * @return 返回String类型json
      */
-    public String Map2Json(Map<String, String> Map) {
+    public static String Map2Json(Map<String, String> Map) {
         Gson gson = new Gson();
         return gson.toJson(Map);
     }

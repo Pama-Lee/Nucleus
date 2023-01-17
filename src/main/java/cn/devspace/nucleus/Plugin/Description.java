@@ -14,7 +14,8 @@ public class Description {
     private String description;
     private String dbName;
     private String dbType;
-    private String route;
+    private String route = null;
+    private String language = null;
 
     public Description(String YamlString) {
         Yaml yml = new Yaml();
@@ -36,6 +37,7 @@ public class Description {
             this.dbName = (String) map.get("Database");
             this.dbType = (String) map.get("DatabaseType");
             this.route = (String) map.get("Route");
+            this.language = (String) map.get("Language");
         }
     }
 
@@ -69,6 +71,13 @@ public class Description {
     }
 
     public String getRoute() {
+        if (this.route == null){
+            return this.getName();
+        }
         return this.route;
+    }
+
+    public String getLanguage() {
+        return language;
     }
 }

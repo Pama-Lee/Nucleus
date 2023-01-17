@@ -27,8 +27,6 @@ public class LangBase {
     }
 
     public LangBase(InputStream AppInputStream) {
-        String Language = getLanguage();
-        this.Language = Language;
         lang = loadLangFile(AppInputStream);
     }
 
@@ -62,7 +60,7 @@ public class LangBase {
      * @param params
      * @return
      */
-    protected String TranslateOne(String key, Object... params) {
+    public String TranslateOne(String key, Object... params) {
         if (params != null) {
             String[] paramsToSting = new String[params.length];
             for (int i = 0; i < params.length; i++) {

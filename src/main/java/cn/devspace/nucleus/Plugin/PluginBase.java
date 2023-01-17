@@ -6,17 +6,26 @@ import cn.devspace.nucleus.Manager.ManagerBase;
 import cn.devspace.nucleus.Message.Log;
 import cn.devspace.nucleus.Server.Server;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.util.DigestUtils;
 
 import java.io.InputStream;
 import java.util.Map;
 
 abstract public class PluginBase extends ManagerBase implements Loader {
 
-    protected static LangBase AppLang = null;
+    private LangBase PluginLang = null;
+
+    private boolean isLoaded = false;
+
+    private boolean isEnable = false;
+
+    private boolean isEnabled = false;
 
     protected Description description;
 
     protected String PluginName;
+
+    private String key;
 
     public PluginBase() {
 
@@ -36,7 +45,13 @@ abstract public class PluginBase extends ManagerBase implements Loader {
 
     protected void initRoute(Class<?> classes) {
         Map<Map<String, String>, Class<?>> maps = AnnotationManager.getRouterAnnotation(classes);
-        Server.RouterList.put(getDescription().getRoute(), maps);
+        if (Server.RouterList.get(getDescription().getRoute()) != null){
+            for(Map<String,String> temp:maps.keySet()){
+                Server.RouterList.get(getDescription().getRoute()).put(temp,maps.get(temp));
+            }
+        }else {
+            Server.RouterList.put(getDescription().getRoute(),maps);
+        }
         Server.PluginRoute.put(getDescription().getRoute(), PluginName);
     }
 
@@ -50,7 +65,7 @@ abstract public class PluginBase extends ManagerBase implements Loader {
         try {
             InputStream langStream = new ClassPathResource("app/" + this.PluginName + "/Language/" + language + ".ini").getInputStream();
             LangBase lb = new LangBase(langStream);
-            AppLang = lb;
+            PluginLang = lb;
             return lb;
         } catch (Exception e) {
             Log.sendWarn(e.toString());
@@ -64,21 +79,34 @@ abstract public class PluginBase extends ManagerBase implements Loader {
         description = des;
     }
 
+    public void setPluginLang(LangBase langBase){this.PluginLang = langBase;}
+
     public Description getDescription() {
         return description;
     }
 
 
-    protected String Translation(String key, Object... params) {
-        return TranslateOne(key, params);
+    protected String translateMessage(String key, Object... params) {
+        return Translator(key, params);
     }
 
-    protected String Translation(String key, String[] param) {
-        return TranslateOne(key, param);
+    protected String translateMessage(String key, String[] param) {
+        return Translator(key, (Object) param);
     }
 
-    public void localPlugin(String PluginName) {
-        this.PluginName = PluginName;
+    private String Translator(String key, Object... params){
+        if (this.PluginLang == null){
+            Log.sendWarn("Don't exist any language config");
+            return null;
+        }else{
+           return this.PluginLang.TranslateOne(key,params);
+        }
+    }
+
+
+    public void setPluginName(String name){
+        this.PluginName = name;
+        this.key =  DigestUtils.md5DigestAsHex((String.valueOf(System.currentTimeMillis())+name+Server.getServerVersion()).getBytes());
     }
 
     protected String getLocalPlugin() {
@@ -90,9 +118,42 @@ abstract public class PluginBase extends ManagerBase implements Loader {
 
     }
 
+    public void setLoaded(){
+        this.isLoaded = true;
+    }
+
+    public void setDisable(){
+        this.isLoaded = false;
+    }
+
+    public boolean getStatus(){
+        return this.isLoaded;
+    }
+
     @Override
     public String getName() {
         return PluginName;
     }
+
+    public boolean isEnable() {
+        return isEnable;
+    }
+
+    public void setEnable(boolean enable) {
+        isEnable = enable;
+    }
+
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        isEnabled = enabled;
+    }
+
+    public String getKey(){
+        return this.key;
+    }
+
 }
 
