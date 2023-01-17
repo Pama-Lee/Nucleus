@@ -8,8 +8,6 @@ import cn.devspace.nucleus.Message.Log;
 import cn.devspace.nucleus.Plugin.AppBase;
 import cn.devspace.nucleus.Server.Server;
 
-import java.util.HashMap;
-import java.util.Map;
 
 import static cn.devspace.nucleus.Server.Server.*;
 
@@ -19,7 +17,7 @@ public class Console extends AppBase implements CommandBase {
     @Commands(Command = "help",help = "/help [页数] 查看服务器所有指令")
     public String help(String[] args) {
         int page = 0;
-        int helps = 20;
+        int helps = 20;// 每页Help的显示条数
         if (args != null){
             page = Integer.parseInt(args[0]);
         }else {
@@ -96,6 +94,5 @@ public class Console extends AppBase implements CommandBase {
         ConsoleThread CT = new ConsoleThread();
         CT.start();
         sendLog("你可以输入命令,命令以\"/\"开始,您可以输入/help查看帮助");
-
     }
 }
