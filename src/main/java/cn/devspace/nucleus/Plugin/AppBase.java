@@ -21,6 +21,7 @@ abstract public class AppBase extends ManagerBase {
     protected static String LoadingApp = null;
     protected static LangBase AppLang = null;
     protected Description description;
+    private boolean isLoaded = false;
 
     protected String AppName;
 
@@ -129,4 +130,11 @@ abstract public class AppBase extends ManagerBase {
 
     }
 
+    public boolean getStatus(){
+        return this.isLoaded;
+    }
+
+    public void setLoaded() {
+        this.isLoaded = true;
+    }
 }

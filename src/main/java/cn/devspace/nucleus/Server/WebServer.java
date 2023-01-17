@@ -28,7 +28,9 @@ public class WebServer implements WebMvcConfigurer, ErrorPageRegistrar {
     public void registerErrorPages(ErrorPageRegistry registry) {
         Map<String,?> reloads = Server.getSingeYaml(Server.RunPath+"resources/nucleus.yml");
         Object reload = reloads.get("Reload_404");
-
+        if (reload == null){
+            reload = "none";
+        }
         ErrorPage[] errorPages = new ErrorPage[1];
         if (reload.equals("Vue")){
             errorPages[0] = new ErrorPage(HttpStatus.NOT_FOUND, "/index.html");
