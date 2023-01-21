@@ -84,6 +84,18 @@ public class ManagerBase extends LangBase {
         return Map;
     }
 
+    public static Map<String, Map<String,String>> getSingeYamlMap(String Path) {
+        Yaml yaml = new Yaml();
+        BufferedReader bf = null;
+        try {
+            bf = new BufferedReader(new FileReader(Path));
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        Map<String, Map<String,String>> map = yaml.loadAs(bf, Map.class);
+        return map;
+    }
+
     public String Translators(String key) {
         return TranslateOne(key);
     }

@@ -41,7 +41,7 @@ public class NucleusApplication {
         WebServer webServer = new WebServer(args);
         webServer.run();
         server.EnabledApp();
-        //server.EnabledPlugin();
+        server.EnabledPlugin();
 
     }
 

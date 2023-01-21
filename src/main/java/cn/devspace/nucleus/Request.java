@@ -95,8 +95,12 @@ public class Request extends HttpServlet {
             } else {
                 return null;
             }
-        }catch (Exception e){
-            Log.sendWarn(e.getStackTrace()[0].toString());
+        }catch (InvocationTargetException ite){
+            Log.sendWarn(method.get("R")+"路由出现错误");
+            Log.sendWarn(ite.getTargetException().getMessage());
+        } catch (Exception e){
+            Log.sendWarn(method.get("R")+"路由出现错误");
+            e.printStackTrace();
         }
        return null;
     }

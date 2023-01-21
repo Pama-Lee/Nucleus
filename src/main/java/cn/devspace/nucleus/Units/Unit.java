@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.Serial;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -21,6 +22,15 @@ public class Unit {
 
     public static boolean haveApp(String AppName){
         return Server.PluginList.containsKey(AppName) || Server.AppList.containsKey(AppName);
+    }
+
+    public static boolean checkParams(Map<String,String> maps, String[] params){
+        for (String param : params) {
+            if(!maps.containsKey(param)){
+                return false;
+            }
+        }
+        return true;
     }
 
     public static Set<String> getClassesFromJar(JarFile jar){
