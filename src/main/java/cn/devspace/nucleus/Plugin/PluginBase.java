@@ -87,6 +87,10 @@ abstract public class PluginBase extends ManagerBase implements Loader {
 
     public void setPluginLang(LangBase langBase){this.PluginLang = langBase;}
 
+    public LangBase getPluginLang() {
+        return PluginLang;
+    }
+
     public Description getDescription() {
         return description;
     }
