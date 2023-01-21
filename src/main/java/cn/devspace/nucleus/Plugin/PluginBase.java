@@ -9,11 +9,15 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.DigestUtils;
 
 import java.io.InputStream;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 abstract public class PluginBase extends ManagerBase implements Loader {
 
     private LangBase PluginLang = null;
+
+    public String classLoaderHashCode = null;
 
     private boolean isLoaded = false;
 
@@ -26,6 +30,8 @@ abstract public class PluginBase extends ManagerBase implements Loader {
     protected String PluginName;
 
     private String key;
+
+    public Set<String> allClazz = new HashSet<>();
 
     public PluginBase() {
 

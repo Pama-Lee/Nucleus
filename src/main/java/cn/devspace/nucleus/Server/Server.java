@@ -23,7 +23,9 @@ import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class Server extends ManagerBase {
 
@@ -117,8 +119,8 @@ public class Server extends ManagerBase {
 
         String classLoaderPluginHash = classLoaderManager.createClassLoader();
 
-        AppLoader.loadApps(this);
-        EnableApp();
+        //AppLoader.loadApps(this);
+        initApps(false);
         initPlugins(false);
         Log.sendLog(TranslateOne("App.Run.UseMemory", getUsedMemory()));
     }
@@ -137,6 +139,43 @@ public class Server extends ManagerBase {
         PluginList = pL.getPlugins();
         LoadPlugin();
         EnablePlugin();
+    }
+
+    public void initApps(boolean reload){
+        if (reload){
+            for (String key: PluginRoute.keySet()){
+                if (PluginList.containsKey(PluginRoute.get(key))){
+                    PluginRoute.remove(key);
+                    initApps(true);
+                    return;
+                }
+            }
+        }
+        AppLoader appLoader = new AppLoader(this);
+        AppList = appLoader.getApps(new HashSet<>());
+        LoadApp();
+        EnablePlugin();
+    }
+
+    private void LoadApp() {
+        String cApp = null;
+        try {
+            if (AppList == null){
+                return;
+            }
+            for (String App : AppList.keySet()) {
+                cApp = App;
+                AppBase appBase = AppList.get(App);
+                if (!appBase.getStatus()){
+                    appBase.onLoad();
+                    appBase.setLoaded();
+                }
+            }
+        }catch (Exception e){
+            Log.sendWarn(TranslateOne("App.LoadError",cApp,e.getMessage()+" where->"+e.getStackTrace()[0]));
+            disableApp(cApp);
+            LoadApp();
+        }
     }
 
     private void EnableApp() {
@@ -215,6 +254,11 @@ public class Server extends ManagerBase {
                 cPlugin = plugin;
                 PluginBase pluginBase = PluginList.get(plugin);
                 if (!pluginBase.isEnabled()){
+
+                    Class<?> pluginClass= pluginBase.getClass();
+                    BeanManager.registerBean(plugin,pluginClass);
+
+                    BeanManager.getAllBeanString();
                     pluginBase.onEnabled();
                     pluginBase.setEnabled(true);
                 }
@@ -252,10 +296,10 @@ public class Server extends ManagerBase {
            if (!newPlugin) Log.sendError("Can not init Server",13);
         }
         if (!new File(RunPath+"Pages/").exists()){
-           boolean newPage =  new File(RunPath+"plugins/").mkdir();
+           boolean newPage =  new File(RunPath+"Pages/").mkdir();
             try {
-               boolean new404 =  new File(RunPath+"plugins/404.html").createNewFile();
-               if (!newPage || !new404) Log.sendError("Can not init Server",13);
+               boolean new404 =  new File(RunPath+"Pages/404.html").createNewFile();
+               if (!newPage || !new404) Log.sendError("Can not init Server",14);
             } catch (IOException e) {
                 Log.sendWarn("Can not create 404 file");
             }

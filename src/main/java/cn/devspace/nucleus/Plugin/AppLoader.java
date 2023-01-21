@@ -10,7 +10,9 @@ import org.springframework.core.io.ClassPathResource;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import static cn.devspace.nucleus.Manager.ManagerBase.getSingeYaml;
 import static cn.devspace.nucleus.Server.Server.RunPath;
@@ -23,9 +25,8 @@ public class AppLoader implements Loader {
 
     protected String AppName;
 
-    public AppLoader(Server server, String AppName) {
-        this.AppName = AppName;
-        this.description = loadDescription();
+    public AppLoader(Server server) {
+
     }
 
 
@@ -48,12 +49,14 @@ public class AppLoader implements Loader {
         return AppName;
     }
 
-    public static void loadApps(Server server) {
+    public Map<String,AppBase> getApps(Set<String> disableApp){
+        Map<String, AppBase> Apps = new HashMap<>(100);
         try {
             Map<String, ArrayList<String>> Maps = getSingeYaml(RunPath + "/resources/nucleus.yml", true);
             if (Maps != null) {
                 ArrayList<String> enableApps = Maps.get("EnableApp");
                 for (String apps : enableApps) {
+                    if (disableApp.contains(apps))continue;
                     LoadingApp = apps;
                     Description appDes = new Description(new ClassPathResource("app/" + apps + "/app.yml").getInputStream());
                     String main = appDes.getMain();
@@ -64,19 +67,22 @@ public class AppLoader implements Loader {
                     app.setDescription(appDes);
                     Log.AppStart(Server.getInstance().Translators("App.Start", apps));
                     app.localApp(apps);
-                    //开始执行onload
-                    app.onLoad();
-                    BeanManager beanManager = new BeanManager();
-                    Log.AppStart(Server.getInstance().Translators("App.Loaded", apps));
+                    Apps.put(apps,app);
                     Server.AppList.put(apps, app);
                 }
+                return Apps;
             }
+            return null;
         } catch (FileNotFoundException fe) {
             Log.sendWarn(Server.getInstance().TranslateOne("App.NotFound", LoadingApp));
             Log.sendWarn(Server.getInstance().TranslateOne("App.Error", LoadingApp));
+            disableApp.add(LoadingApp);
+            return getApps(disableApp);
         } catch (Exception e) {
             Log.sendWarn(e.toString());
             Log.sendWarn(Server.getInstance().TranslateOne("App.Error", LoadingApp));
+            disableApp.add(LoadingApp);
+           return getApps(disableApp);
         }
     }
 

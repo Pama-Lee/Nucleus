@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Properties;
 
 
-public class DataBase {
+public class DataBase{
     private static SessionFactory concreteSessionFactory = null;
     protected Session session = null;
 
@@ -70,9 +70,7 @@ public class DataBase {
             Properties prop;
             if (properties == null){
                 prop = new Properties();
-                Logger logger = Logger.getLogger(DataBase.class);
-                logger.isDebugEnabled();
-                logger.trace("ERROR");
+
                 prop.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/login");
                 prop.setProperty("hibernate.connection.username", "root");
                 prop.setProperty("hibernate.connection.password", "ljk1249072779");

@@ -1,12 +1,15 @@
 package cn.devspace.nucleus.Plugin;
 
 import cn.devspace.nucleus.Lang.LangBase;
+import cn.devspace.nucleus.Manager.BeanManager;
 import cn.devspace.nucleus.Manager.ClassLoaderManager;
 import cn.devspace.nucleus.Manager.ClassManager;
 import cn.devspace.nucleus.Message.Log;
 import cn.devspace.nucleus.Server.Server;
+import cn.devspace.nucleus.Units.Unit;
 import org.apache.tomcat.Jar;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,6 +23,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import static cn.devspace.nucleus.Server.Server.RunPath;
+
 
 public class PluginLoader implements Loader {
 
@@ -93,6 +97,8 @@ public class PluginLoader implements Loader {
                             String hashCode = classLoaderManager.createURLClassLoader(pluginFile);
                             URLClassLoader urlClassLoader = (URLClassLoader) classLoaderManager.getClassLoader(hashCode);
                             JarFile pluginJar = new JarFile(RunPath + "plugins/" + s);
+
+                            Set<String> set = Unit.getClassesFromJar(pluginJar);
                             Description description = getDescription(pluginJar);
                             String lang = Server.getInstance().Language;
                             LangBase langBase = null;
@@ -121,6 +127,8 @@ public class PluginLoader implements Loader {
                                 plugin.setPluginLang(langBase);
                             }
                             plugin.setDescription(description);
+                            plugin.allClazz = set;
+                            plugin.classLoaderHashCode = hashCode;
                             plugin.setPluginName(description.getName());
                             res.put(description.getName(), plugin);
                            // Log.sendLog(set.toString());
