@@ -254,6 +254,11 @@ public class Server extends ManagerBase {
                 cPlugin = plugin;
                 PluginBase pluginBase = PluginList.get(plugin);
                 if (!pluginBase.isEnabled()){
+
+                    Class<?> pluginClass= pluginBase.getClass();
+                    BeanManager.registerBean(plugin,pluginClass);
+
+                    BeanManager.getAllBeanString();
                     pluginBase.onEnabled();
                     pluginBase.setEnabled(true);
                 }

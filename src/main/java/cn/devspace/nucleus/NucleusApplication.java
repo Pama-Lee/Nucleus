@@ -9,6 +9,7 @@
 package cn.devspace.nucleus;
 
 
+import cn.devspace.nucleus.Manager.Annotation.InterfaceScan;
 import cn.devspace.nucleus.Manager.BeanManager;
 import cn.devspace.nucleus.Message.Log;
 import cn.devspace.nucleus.Server.Server;
@@ -18,6 +19,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import javax.annotation.Resource;
 
 @SpringBootApplication
+@InterfaceScan
 public class NucleusApplication {
 
     static BeanManager beanManager;
@@ -39,7 +41,7 @@ public class NucleusApplication {
         WebServer webServer = new WebServer(args);
         webServer.run();
         server.EnabledApp();
-        server.EnabledPlugin();
+        //server.EnabledPlugin();
 
     }
 
