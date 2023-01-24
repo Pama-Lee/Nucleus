@@ -31,7 +31,7 @@ public class ApiUnit {
             .connectTimeout(Duration.ofSeconds(10))
             .build();
 
-    public static Object createPOST(String URL, Map<Object, Object> form){
+    public static HttpResponse<String> createPOST(String URL, Map<Object, Object> form){
         HttpRequest request = HttpRequest.newBuilder()
                 .POST(ofFormData(form))
                 .uri(URI.create(URL))
