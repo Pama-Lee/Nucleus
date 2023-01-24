@@ -1,143 +1,146 @@
-<div align = "center">
-   <a href="https://github.com/pama- lee/nucleus">
-     <img src = "./ img/nucleus 1@0.25x.png" alt = "logo" width = "100" height = "100">>
-   </a>
 
-<h3 align = "center"> nucleus </h3>
+  <a href="https://github.com/Pama-Lee/Nucleus">
+    <img src="./img/Nucleus-1@0.25x.png" alt="Logo" width="200" height="200">
+  </a>
 
-   <p align = "center">
-     A plug -in Java framework
-     <br />
-   </p>
+<h3 align="center">Nucleus</h3>
+
+  <p align="center">
+    一个插件化Java框架
+    <br />
+  </p>
+
 
 <details>
-   <summary> Directory </Summary>
-   <OL>
-     <li>
-       <a href="#about-the-project"> About this project </a>
-     </li>
-     <li>
-       <a href="#getting-Started"> Start Work </a>
-       <ul>
-         <li> <a href="#Prejisites"> dependence </a> </li>
-         <li> <a href="#Installation"> Create a plugin </a> </li>
-       </ul>
-     </li>
-     <li> <a href="#Roadmap"> Plan to implement </a> </li>
-     <li> <a href="#contributing"> contribution </a> </li>
-     <li> <a href="#License"> Open Source Agreement </a> </li>
-     <li> <a href="#Contact"> Contact us </a> </li>
-     <li> <a href="#acknowledgments"> Xie </a> </li>
-   </OL>
-</Details>
+  <summary>目录</summary>
+  <ol>
+    <li>
+      <a href="#about-the-project">关于这个项目</a>
+    </li>
+    <li>
+      <a href="#getting-started">开始工作</a>
+      <ul>
+        <li><a href="#prerequisites">依赖</a></li>
+        <li><a href="#installation">创建一个Plugin</a></li>
+      </ul>
+    </li>
+    <li><a href="#roadmap">计划实现</a></li>
+    <li><a href="#contributing">贡献</a></li>
+    <li><a href="#license">开源协议</a></li>
+    <li><a href="#contact">联系我们</a></li>
+    <li><a href="#acknowledgments">鸣谢</a></li>
+  </ol>
+</details>
 
 
 
-## About this project
+## 关于这个项目
 
-This is a upper -level framework based on SpringBoot, which is committed to realizing the instance of the SpringBoot service and realizing its hot insertion. Save development costs and deployment difficulties and costs. Help.
+这是一个基于SpringBoot构建的上层框架, 致力于实现SpringBoot服务实例化剥离并实现其热拔插. 节约开发成本及部署难度及成本. 此项目可能不适用于企业环境,  但为中小微型Web服务提供助力.
 
-Why use:
-* The main service is started once, and the plug -in is hot.
-* Provide many interfaces and realize the control of the life cycle, which is convenient for injecting in various processes of Spring
-* Easy to use, convenient development, and advocate programming development: Smile:
+为什么使用:
+* 主服务一次启动, 插件热拔插.
+* 提供诸多接口, 并实现服务生命周期控制, 便于注入Spring各流程中
+* 便于使用, 开发便捷, 提倡编程式开发  :smile:
 
-<p align = "right"> (<a href="#readme- top"> back to top </a>) </p>
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-## Start using
+## 开始使用
 
-Plug -in development process
+插件开发流程
 
-### Dependencies
+### 依赖
 
-* Maven
-  ```
+* maven
+  ```    
   <dependency>
-  <Groupid> CN.DEV-SPACE </Groupid>
-  <Arttifactid> Nucleus </Artifactid>
-  <version> </version>
-  </dependency>
+        <groupId>cn.dev-space</groupId>
+        <artifactId>Nucleus</artifactId>
+        <version></version>
+    </dependency>
   ```
 
-### Create a plugin
+### 创建一个Plugin
 
-1. Create ** NUCLEUS.yml ** configuration file in the project root directory
+1. 在项目根目录创建 **nucleus.yml**配置文件
 
 ```yaml
-### Nucleus.yml Example
-Name: plug -in name (must)
-Author: Author (must)
-Version: version (must)
-Main: com.example.main (starting class, must)
-Description: Description (optional)
-Route: Routing address (optional)
-Language: The first choice language (optional, the language selected by the main frame)
+#### nucleus.yml 示例
+Name: 插件名(必须)
+Author: 作者(必须)
+Version: 版本(必须)
+Main: com.example.Main(启动类, 必须)
+Description: 描述 (可选)
+Route: 路由地址 (可选)
+Language: 首选语言 (可选, 不填则为主框架所选语言)
 ```
 
-<p align = "right"> (<a href="#readme- top"> back to top </a>) </p>
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-2. Start the class inheritance `CN.Devspace.nucleus.plugin.pluginbase`
+2. 启动类继承 `cn.devspace.nucleus.plugin.PluginBase`类
 
 ```java
-import cn.devspace.nucleus.plugin.pluginbase;
+import cn.devspace.nucleus.Plugin.PluginBase;
 public class Main extends PluginBase {
 }
 ```
 
 
 
-## Plan implementation
+## 计划实现
 
-- [X] Add update log
-- [X] Improve the internal login app
-- [] Multi -language support
+- [x] 添加更新日志
+- [x] 完善内部Login App
+- [ ] 多语言支持
     - [x] Chinese
-    - [] English
-    - [] French
+    - [ ] Enlish
+    - [ ] French
 
-<p align = "right"> (<a href="#readme- top"> back to top </a>) </p>
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 
-## How to contribute
+## 如何贡献
 
-If you have a suggestion that can make the situation better, please allocate the repository and create a driving request.
-Don't forget to give the project a Star! Thanks again!
+如果您有一个可以使情况变得更好的建议，请分配存储库并创建拉动请求。
+别忘了给项目一个star！ 再次感谢！
 
-1. Fork this project
-2. Create your own development branches (`git checkout -B feature/amazingfeature`)
-3. Submit (`git commit -m 'add some amazingfeature'`)
-4. Push to your branch (`Git Push Origin Feature/Amazingfeature`)
-5. Open the merger request
+1. Fork这个项目
+2. 创建你自己的开发分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交 (`git commit -m 'Add some AmazingFeature'`)
+4. 推送到你的分支 (`git push origin feature/AmazingFeature`)
+5. 打开合并请求
 
-<p align = "right"> (<a href="#readme- top"> back to top </a>) </p>
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 
 
 ## License
 
-Distitived undolingnse. See `livense.txt` for more information.
+Distributed under the MIT License. See `LICENSE.txt` for more information.
 
-<p align = "right"> (<a href="#readme- top"> back to top </a>) </p>
-
-
-
-## Contact us
-
-Pama lee - pama@pamalee.cn
-
-<p align = "right"> (<a href="#readme- top"> back to top </a>) </p>
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 
-## Acknowledgments
+## 联系我们
+
+Pama Lee -- pama@pamalee.cn
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+
+## 鸣谢
 
 * Maven
 * SpringBoot
 * Java
 * Hibernate
-* MyBatis-Plus
-* NUKKIT
+* Mybatis-Plus
+* Nukkit
 
-<p align = "right"> (<a href="#readme- top"> back to top </a>) </p>
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+[]: 

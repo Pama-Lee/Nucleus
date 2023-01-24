@@ -1,6 +1,6 @@
-<div align="center">
+
   <a href="https://github.com/Pama-Lee/Nucleus">
-    <img src="./img/Nucleus-1@0.25x.png" alt="Logo" width="100" height="100">
+    <img src="./img/Nucleus-1@0.25x.png" alt="Logo" width="200" height="200">
   </a>
 
 <h3 align="center">Nucleus</h3>
