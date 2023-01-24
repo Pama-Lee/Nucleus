@@ -1,8 +1,8 @@
-
+<div align="center">
   <a href="https://github.com/Pama-Lee/Nucleus">
     <img src="./img/Nucleus-1@0.25x.png" alt="Logo" width="200" height="200">
   </a>
-
+</div>
 <h3 align="center">Nucleus</h3>
 
   <p align="center">
@@ -142,5 +142,3 @@ Pama Lee -- pama@pamalee.cn
 * Nukkit
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-[]: 

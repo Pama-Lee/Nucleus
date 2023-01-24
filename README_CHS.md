@@ -1,16 +1,13 @@
-
+<div align="center">
   <a href="https://github.com/Pama-Lee/Nucleus">
     <img src="./img/Nucleus-1@0.25x.png" alt="Logo" width="200" height="200">
   </a>
-
+</div>
 <h3 align="center">Nucleus</h3>
-
   <p align="center">
     一个插件化Java框架
     <br />
   </p>
-
-
 <details>
   <summary>目录</summary>
   <ol>
@@ -31,8 +28,6 @@
     <li><a href="#acknowledgments">鸣谢</a></li>
   </ol>
 </details>
-
-
 
 ## 关于这个项目
 
@@ -129,18 +124,11 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 Pama Lee -- pama@pamalee.cn
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
 ## 鸣谢
-
 * Maven
 * SpringBoot
 * Java
 * Hibernate
 * Mybatis-Plus
 * Nukkit
-
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-[]: 
