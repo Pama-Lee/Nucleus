@@ -1,48 +1,134 @@
-<p align="center">
-  <a href="https://nucleus.pamalee.cn">
-    <img alt="nucleus" src="./img/Logo.png" width="250"/>
-  </a>
-</p>
 <div align="center">
-<img src="https://img.shields.io/badge/License-MIT_License-green?style=for-the-badge" alt="license">
-<img src="https://img.shields.io/badge/build-v0.0.1-blue?style=for-the-badge" alt="build">
-<img src="https://img.shields.io/badge/Version-V0.0.1-brown?style=for-the-badge" alt="version">
+  <a href="https://github.com/Pama-Lee/Nucleus">
+    <img src="./img/Nucleus-1@0.25x.png" alt="Logo" width="200" height="200">
+  </a>
 </div>
-<div style="background:orangered;color:white;" align="center"><h2>这个项目正在开发中,功能性暂不全面,欢迎对本项目做出贡献</h2></div>
+<h3 align="center">Nucleus</h3>
+  <p align="center">
+    一个插件化Java框架
+    <br />
+  </p>
+<details>
+  <summary>目录</summary>
+  <ol>
+    <li>
+      <a href="#about-the-project">关于这个项目</a>
+    </li>
+    <li>
+      <a href="#getting-started">开始工作</a>
+      <ul>
+        <li><a href="#prerequisites">依赖</a></li>
+        <li><a href="#installation">创建一个Plugin</a></li>
+      </ul>
+    </li>
+    <li><a href="#roadmap">计划实现</a></li>
+    <li><a href="#contributing">贡献</a></li>
+    <li><a href="#license">开源协议</a></li>
+    <li><a href="#contact">联系我们</a></li>
+    <li><a href="#acknowledgments">鸣谢</a></li>
+  </ol>
+</details>
 
-## 🤔什么是 <span style="color:orange">Nucleus</span> ?
+## 关于这个项目
 
----
-<div style="color:white">
-<h4><span style="color:orange">Nucleus</span>事件化插件式Springboot框架</h4>
-</div>
-## 目前Nucleus正在规划的
-依托SpringBoot对于网关的协助,通过自编写其逻辑处理层,将从SpringBoot传递的来自用户的请求进行模块化分发，以达到开发便携性以及原子化开发
-## 目前Nucleus正在思考的模块化
-目前正在规划的是，项目通过启动SpringBoot服务,获取到来自用户的请求后将其分发给Nucleus进行托管处理, Nucleus内部由多个「独立」的「APP」对不同的请求进行处理。 **「Plugin」也被支持「APP」的相关性质**
+这是一个基于SpringBoot构建的上层框架, 致力于实现SpringBoot服务实例化剥离并实现其热拔插. 节约开发成本及部署难度及成本. 此项目可能不适用于企业环境,  但为中小微型Web服务提供助力.
 
-**例如: **
+为什么使用:
+* 主服务一次启动, 插件热拔插.
+* 提供诸多接口, 并实现服务生命周期控制, 便于注入Spring各流程中
+* 便于使用, 开发便捷, 提倡编程式开发  :smile:
 
-**Nucleus内部存在一个名为[Login]的「APP」, 当SpringBoot获取到来自\*\*.com/Login/LoginMethod 的请求并转发给nucleus后,
-Nucleus将会对其处理，将请求分发给[Login]中的[LoginMethod]模块，LoginMethod模块的定义是Login给出的,
-Nucleus并不会在此层面上对Method进行筛选，而是将请求交给[Login],通常,
-Nucleus会将请求发送给已经在Server中注册的「Login」中的onCall() **
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-## 「APP」的构成以及后续可添加的组件「Plugin」
+## 开始使用
 
-#### 「APP」由两部分组成：
+插件开发流程
 
-- 位于核心源码中cn.devspace.Nucleus.App中的主类与其他定义的其他类
-- 位于资源文件[resources]中的app文件夹内各「APP」的配置Yaml文件
+### 依赖
 
-#### 【规划中】「Plugin」原则上是一个打包好的.jar文件,其中包含
+* maven
+  ```    
+  <dependency>
+        <groupId>cn.dev-space</groupId>
+        <artifactId>Nucleus</artifactId>
+        <version></version>
+    </dependency>
+  ```
 
-- 可由您自己命名的类路径及其中的类,例如 com.helloworld.welcome
-- jar内根目录的app.yml配置文件
+### 创建一个Plugin
 
-#### 「APP」和「Plugin」都包含生命周期
+1. 在项目根目录创建 **nucleus.yml**配置文件
 
-- onLoad - 当服务器开始加载插件时的事件
-- onEnable - 当服务器准备就绪后的事件
-- onCall - 当服务器将请求分发给该「APP」或「Plugin」的事件
-- onDisable - 当「APP」或「Plugin」被卸载时的事件
+```yaml
+#### nucleus.yml 示例
+Name: 插件名(必须)
+Author: 作者(必须)
+Version: 版本(必须)
+Main: com.example.Main(启动类, 必须)
+Description: 描述 (可选)
+Route: 路由地址 (可选)
+Language: 首选语言 (可选, 不填则为主框架所选语言)
+```
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+2. 启动类继承 `cn.devspace.nucleus.plugin.PluginBase`类
+
+```java
+import cn.devspace.nucleus.Plugin.PluginBase;
+public class Main extends PluginBase {
+}
+```
+
+
+
+## 计划实现
+
+- [x] 添加更新日志
+- [x] 完善内部Login App
+- [ ] 多语言支持
+    - [x] Chinese
+    - [ ] Enlish
+    - [ ] French
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+
+## 如何贡献
+
+如果您有一个可以使情况变得更好的建议，请分配存储库并创建拉动请求。
+别忘了给项目一个star！ 再次感谢！
+
+1. Fork这个项目
+2. 创建你自己的开发分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交 (`git commit -m 'Add some AmazingFeature'`)
+4. 推送到你的分支 (`git push origin feature/AmazingFeature`)
+5. 打开合并请求
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+
+
+## License
+
+Distributed under the MIT License. See `LICENSE.txt` for more information.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+
+## 联系我们
+
+Pama Lee -- pama@pamalee.cn
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+## 鸣谢
+* Maven
+* SpringBoot
+* Java
+* Hibernate
+* Mybatis-Plus
+* Nukkit
+<p align="right">(<a href="#readme-top">back to top</a>)</p>

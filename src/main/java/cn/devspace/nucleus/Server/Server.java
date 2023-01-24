@@ -1,5 +1,6 @@
 package cn.devspace.nucleus.Server;
 
+import cn.devspace.nucleus.App.Console.Console;
 import cn.devspace.nucleus.Lang.LangBase;
 import cn.devspace.nucleus.Manager.Annotation.version.Nucleus;
 import cn.devspace.nucleus.Manager.BeanManager;
@@ -257,8 +258,6 @@ public class Server extends ManagerBase {
 
                     Class<?> pluginClass= pluginBase.getClass();
                     BeanManager.registerBean(plugin,pluginClass);
-
-                    BeanManager.getAllBeanString();
                     pluginBase.onEnabled();
                     pluginBase.setEnabled(true);
                 }

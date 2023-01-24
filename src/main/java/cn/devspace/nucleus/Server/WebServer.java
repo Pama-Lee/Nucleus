@@ -20,7 +20,6 @@ public class WebServer implements WebMvcConfigurer, ErrorPageRegistrar {
     //拿到静态资源
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        Log.sendLog(new File(Server.RunPath + "Pages/").toURI().toString());
         registry.addResourceHandler("/**").addResourceLocations(new File(Server.RunPath + "Pages/").toURI().toString());
     }
 

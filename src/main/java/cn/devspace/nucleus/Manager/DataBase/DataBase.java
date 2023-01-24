@@ -71,9 +71,9 @@ public class DataBase{
             if (properties == null){
                 prop = new Properties();
 
-                prop.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/login");
+                prop.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/");
                 prop.setProperty("hibernate.connection.username", "root");
-                prop.setProperty("hibernate.connection.password", "ljk1249072779");
+                prop.setProperty("hibernate.connection.password", "root");
                 prop.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
                 prop.setProperty("hibernate.show_sql", "true");
                 prop.setProperty("hibernate.format_sql", "true");

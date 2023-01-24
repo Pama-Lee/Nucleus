@@ -1,5 +1,7 @@
 package cn.devspace.nucleus.Manager.DataBase;
 
+import cn.devspace.nucleus.Manager.SettingManager;
+import cn.devspace.nucleus.Message.Log;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.datasource.DataSourceFactory;
 import org.apache.ibatis.mapping.Environment;
@@ -15,6 +17,10 @@ import org.springframework.context.annotation.Bean;
 
 
 import javax.sql.DataSource;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Map;
 
 import static com.baomidou.mybatisplus.extension.toolkit.SqlHelper.sqlSessionFactory;
 
@@ -51,8 +57,13 @@ public class MyBatisConfig {
      * @return a DataSource.
      */
     public static DataSource getDataSource() {
-         DataSource dataSource = new org.apache.ibatis.datasource.pooled.PooledDataSource(
-                "", "", "", "");
-        return dataSource;
+        SettingManager settingManager = new SettingManager();
+        Map<String,String> map = settingManager.getMapSetting("Database");
+        if (map == null){
+            Log.sendWarn("没有配置数据源");
+            return null;
+        }
+        return new org.apache.ibatis.datasource.pooled.PooledDataSource(
+               "com.mysql.cj.jdbc.Driver", "jdbc:mysql://IP或域名:3306/数据库名字", (String) map.get("username"), (String) map.get("password"));
     }
 }

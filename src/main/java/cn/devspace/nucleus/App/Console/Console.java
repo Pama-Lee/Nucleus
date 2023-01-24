@@ -4,15 +4,22 @@ import cn.devspace.nucleus.App.Console.Thread.ConsoleThread;
 import cn.devspace.nucleus.Manager.Annotation.Commands;
 import cn.devspace.nucleus.Manager.Command.CommandBase;
 import cn.devspace.nucleus.Manager.Command.CommandManager;
+import cn.devspace.nucleus.Manager.DataBase.test;
 import cn.devspace.nucleus.Message.Log;
 import cn.devspace.nucleus.Plugin.AppBase;
 import cn.devspace.nucleus.Server.Server;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
+
+import javax.annotation.Resource;
 
 import static cn.devspace.nucleus.Server.Server.*;
 
 
 public class Console extends AppBase implements CommandBase {
+
+    @Resource
+    public BaseMapper<test> testBaseMapper;
 
     @Commands(Command = "help",help = "/help [页数] 查看服务器所有指令")
     public String help(String[] args) {
@@ -69,7 +76,8 @@ public class Console extends AppBase implements CommandBase {
 
     @Commands(Command = "test", help = "测试命令")
     public String test(String[] args){
-        Log.sendLog(Server.RouterList.toString());
+        //Log.sendLog(Server.RouterList.toString());
+        testBaseMapper.selectList(null);
         return null;
     }
 

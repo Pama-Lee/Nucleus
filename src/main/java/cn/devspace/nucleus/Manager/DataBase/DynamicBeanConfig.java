@@ -1,7 +1,9 @@
 package cn.devspace.nucleus.Manager.DataBase;
 
+
+import cn.devspace.nucleus.Manager.Annotation.DataMapper;
 import cn.devspace.nucleus.Manager.BeanManager;
-import cn.devspace.nucleus.Manager.ClassLoaderManager;
+import cn.devspace.nucleus.Message.Log;
 import cn.devspace.nucleus.Plugin.PluginBase;
 import cn.devspace.nucleus.Server.Server;
 import cn.hutool.extra.spring.SpringUtil;
@@ -13,7 +15,6 @@ import net.bytebuddy.description.annotation.AnnotationDescription;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.mapper.MapperFactoryBean;
 import org.slf4j.Logger;
@@ -24,7 +25,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.InvocationTargetException;
 import java.net.URLClassLoader;
 import java.util.HashSet;
 import java.util.Set;
@@ -36,7 +36,7 @@ import static cn.devspace.nucleus.Server.Server.classLoaderManager;
  * 动态创建 mapper、service, class and bean
  */
 @Configuration
-@AutoConfigureAfter(SpringUtil.class)
+@AutoConfigureAfter(DataSourceConfig.class)
 public class DynamicBeanConfig {
     private final static Logger log = LoggerFactory.getLogger(DynamicBeanConfig.class);
 
@@ -45,6 +45,7 @@ public class DynamicBeanConfig {
         return () -> {
             for (String plugin : Server.PluginList.keySet()) {
                 Set<Class<?>> entityClassSet = new HashSet<>();
+                Set<Class<?>> ResourceClazz = new HashSet<>();
                 String cPlugin = plugin;
                 PluginBase pluginBase = Server.PluginList.get(plugin);
                 ClassLoader classLoader = pluginBase.getClass().getClassLoader();
@@ -55,6 +56,9 @@ public class DynamicBeanConfig {
                             Class<BaseMapper> clazs = (Class<BaseMapper>) urlClassLoader.loadClass(clazz);
                             if (clazs.isAnnotationPresent(TableName.class)){
                                     entityClassSet.add(clazs);
+                            }
+                            if (clazs.isAnnotationPresent(DataMapper.class)){
+                                ResourceClazz.add(clazs);
                             }
                         } catch (ClassNotFoundException e) {
                             throw new RuntimeException(e);
@@ -83,8 +87,8 @@ public class DynamicBeanConfig {
 
                         MapperFactoryBean<?> factoryBean = new MapperFactoryBean<>(mapperClass);
                         factoryBean.setSqlSessionFactory(sqlSessionFactory);
-                        sqlSessionFactory.getConfiguration().addMapper(mapperClass);
 
+                        sqlSessionFactory.getConfiguration().addMapper(mapperClass);
                         // 注册 mapper
                         Object mapperInstance = null;
                         try {
@@ -99,24 +103,23 @@ public class DynamicBeanConfig {
                                 .name(serviceClassName)
                                 .annotateType(AnnotationDescription.Builder.ofType(Service.class).build())
                                 .make()
-                                .load(getClass().getClassLoader(), new ClassLoadingStrategy.ForBootstrapInjection(null, null))
+                                .load(classLoader, new ClassLoadingStrategy.ForBootstrapInjection(null, null))
                                 .getLoaded();
 
                         // 注册 service
                         try {
-                            SpringUtil.registerBean(getBeanName(serviceClassName), serviceClass.newInstance());
+                            SpringUtil.registerBean(getBeanName(serviceClassName), serviceClass.getConstructor().newInstance());
                         } catch (Exception e) {
                             log.warn("register ServiceImpl error", e);
                         }
 
                     }
+                    for (Class<?> resource : ResourceClazz){
+                        BeanManager.registerBean(resource.getName(),resource);
+                        BeanManager.getBean(resource.getName());
+                    }
                 }
             }
-
-            // 扫描数据库实体，根据实体创建对应 mapper、service
-
-
-
         };
     }
 
