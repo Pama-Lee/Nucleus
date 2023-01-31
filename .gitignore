@@ -21,15 +21,11 @@
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
-/src/main/java/cn/devspace/nucleus/App/Login
-/src/main/java/cn/devspace/nucleus/App/Register
 .idea
 target
 .DS_Store
-/src/main/resources/app/
 /plugins
 /resources
 /out
 /Pages
 #排除控制台
-!/src/main/java/cn/devspace/nucleus/App/Console
