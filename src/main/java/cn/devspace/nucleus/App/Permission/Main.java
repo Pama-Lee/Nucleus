@@ -15,6 +15,7 @@ package cn.devspace.nucleus.App.Permission;
 import cn.devspace.nucleus.App.Permission.unit.permissionManager;
 import cn.devspace.nucleus.Lang.LangBase;
 import cn.devspace.nucleus.Plugin.AppBase;
+import cn.devspace.nucleus.Units.Unit;
 
 public class Main extends AppBase {
 
@@ -25,6 +26,5 @@ public class Main extends AppBase {
         this.langBase = loadLanguage();
         sendLog(this.langBase.TranslateOne("Loading"));
         String[] group = {"president","developer","manager"};
-        sendLog(new permissionManager().newPermission(group));
     }
 }

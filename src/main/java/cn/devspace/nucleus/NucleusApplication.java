@@ -14,10 +14,12 @@ import cn.devspace.nucleus.Manager.BeanManager;
 import cn.devspace.nucleus.Message.Log;
 import cn.devspace.nucleus.Server.Server;
 import cn.devspace.nucleus.Server.Thread.WebServer;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import javax.annotation.Resource;
 
+@MapperScan("cn.devspace.nucleus.App")
 @SpringBootApplication
 @InterfaceScan
 public class NucleusApplication {

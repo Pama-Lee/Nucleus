@@ -22,6 +22,7 @@ abstract public class AppBase extends ManagerBase {
     protected static LangBase AppLang = null;
     protected Description description;
     private boolean isLoaded = false;
+    private boolean isEnabled = false;
 
     protected String AppName;
 
@@ -137,4 +138,12 @@ abstract public class AppBase extends ManagerBase {
     public void setLoaded() {
         this.isLoaded = true;
     }
+
+    public void setEnabled() {
+        this.isEnabled = true;
+    }
+    public boolean isEnabled() {
+        return this.isEnabled;
+    }
+
 }

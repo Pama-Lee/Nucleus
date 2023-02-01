@@ -13,14 +13,17 @@
 package cn.devspace.nucleus.App.Permission.entity;
 
 import cn.devspace.nucleus.Plugin.DataEntity;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
+import javax.persistence.Id;
 import java.sql.Timestamp;
 
 @Data
 @TableName("permission")
 public class Permission extends DataEntity {
+    @TableId
     private Long pid;
     private String token;
     private String permission;

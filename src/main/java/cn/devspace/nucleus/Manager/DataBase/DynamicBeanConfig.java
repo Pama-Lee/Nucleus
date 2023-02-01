@@ -4,6 +4,7 @@ package cn.devspace.nucleus.Manager.DataBase;
 import cn.devspace.nucleus.Manager.Annotation.DataMapper;
 import cn.devspace.nucleus.Manager.BeanManager;
 import cn.devspace.nucleus.Message.Log;
+import cn.devspace.nucleus.Plugin.AppBase;
 import cn.devspace.nucleus.Plugin.PluginBase;
 import cn.devspace.nucleus.Server.Server;
 import cn.hutool.extra.spring.SpringUtil;
@@ -49,22 +50,22 @@ public class DynamicBeanConfig {
                 String cPlugin = plugin;
                 PluginBase pluginBase = Server.PluginList.get(plugin);
                 ClassLoader classLoader = pluginBase.getClass().getClassLoader();
-                if (!pluginBase.isEnabled()){
-                    for (String clazz:pluginBase.allClazz){
+                if (!pluginBase.isEnabled()) {
+                    for (String clazz : pluginBase.allClazz) {
                         try {
                             URLClassLoader urlClassLoader = (URLClassLoader) classLoaderManager.getClassLoader(pluginBase.classLoaderHashCode);
                             Class<BaseMapper> clazs = (Class<BaseMapper>) urlClassLoader.loadClass(clazz);
-                            if (clazs.isAnnotationPresent(TableName.class)){
-                                    entityClassSet.add(clazs);
+                            if (clazs.isAnnotationPresent(TableName.class)) {
+                                entityClassSet.add(clazs);
                             }
-                            if (clazs.isAnnotationPresent(DataMapper.class)){
+                            if (clazs.isAnnotationPresent(DataMapper.class)) {
                                 ResourceClazz.add(clazs);
                             }
                         } catch (ClassNotFoundException e) {
                             throw new RuntimeException(e);
                         }
                     }
-                    for (Class<?> entityClass :entityClassSet ){
+                    for (Class<?> entityClass : entityClassSet) {
 
                         // 只创建带有 TableName 注解的实体
                         TableName tableName = entityClass.getAnnotation(TableName.class);
@@ -114,8 +115,8 @@ public class DynamicBeanConfig {
                         }
 
                     }
-                    for (Class<?> resource : ResourceClazz){
-                        BeanManager.registerBean(resource.getName(),resource);
+                    for (Class<?> resource : ResourceClazz) {
+                        BeanManager.registerBean(resource.getName(), resource);
                         BeanManager.getBean(resource.getName());
                     }
                 }

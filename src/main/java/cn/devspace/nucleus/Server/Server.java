@@ -202,6 +202,7 @@ public class Server extends ManagerBase {
                 AppBase appClass = AppList.get(app);
                 BeanManager.registerBean(app,appClass.getClass());
                 appClass.onEnabled();
+                appClass.setEnabled();
             }
         }catch (Exception e){
             Log.sendWarn(TranslateOne("App.EnabledError",cApp,e.getMessage()));

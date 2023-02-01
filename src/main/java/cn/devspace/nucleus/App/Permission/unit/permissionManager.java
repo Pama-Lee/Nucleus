@@ -13,12 +13,19 @@
 package cn.devspace.nucleus.App.Permission.unit;
 
 import cn.devspace.nucleus.App.Permission.entity.Permission;
+import cn.devspace.nucleus.App.Permission.entity.impl.PermissionImpl;
+import cn.devspace.nucleus.NucleusApplication;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 import org.springframework.util.DigestUtils;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
+@Component
 /**
  * 权限管理器
  * Permission manager
@@ -29,8 +36,16 @@ public class permissionManager {
      * 权限组数据库操作
      * Permission group database operation
      */
-    @Resource
-    public BaseMapper<Permission> permissionBaseMapper;
+    @Autowired
+    public PermissionImpl permissionBaseMapper;
+
+    public static permissionManager permissionManager = new permissionManager();
+
+
+    @PostConstruct
+    public void setPermissionBaseMapper(){
+        permissionManager.permissionBaseMapper = permissionBaseMapper;
+    }
 
     /**
      * 创建一个新的权限组
@@ -45,7 +60,7 @@ public class permissionManager {
         String token = DigestUtils.md5DigestAsHex((System.currentTimeMillis()+permissionString).getBytes());
         permission.setToken(token);
         // TODO: 2023/1/31 保存到数据库 Save to database
-        permissionBaseMapper.insert(permission);
+        permissionManager.permissionBaseMapper.insert(permission);
         return token;
     }
 
@@ -69,7 +84,10 @@ public class permissionManager {
     public boolean checkPermission(String token, String permissionGroup){
         QueryWrapper<Permission> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("token", token);
-        Permission permission = permissionBaseMapper.selectOne(queryWrapper);
+        Permission permission = permissionManager.permissionBaseMapper.selectOne(queryWrapper);
+        if (permission == null){
+            return false;
+        }
         String permissionString = permission.getPermission();
         String[] permissionArray = PermissionString2Array(permissionString);
         for (String permissionItem:permissionArray){
@@ -78,6 +96,32 @@ public class permissionManager {
             }
         }
         return false;
+    }
+
+    public boolean checkPermission(String token, String[] permissionGroup) {
+        QueryWrapper<Permission> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("token", token);
+        Permission permission = permissionManager.permissionBaseMapper.selectOne(queryWrapper);
+        if (permission == null) {
+            return false;
+        }
+        String permissionString = permission.getPermission();
+        String[] permissionArray = PermissionString2Array(permissionString);
+        // 需要满足所有权限才能通过
+        // Need to meet all permissions to pass
+        for (String permissionItem : permissionGroup) {
+            boolean hasPermission = false;
+            for (String permissionItem2 : permissionArray) {
+                if (permissionItem.equals(permissionItem2)) {
+                    hasPermission = true;
+                    break;
+                }
+            }
+            if (!hasPermission){
+                return false;
+            }
+        }
+        return true;
     }
 
 

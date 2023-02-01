@@ -28,4 +28,5 @@ target
 /resources
 /out
 /Pages
+nuclues.yml
 #排除控制台
