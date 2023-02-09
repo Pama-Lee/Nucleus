@@ -14,6 +14,7 @@ package cn.devspace.nucleus.App.Permission.unit;
 
 import cn.devspace.nucleus.App.Permission.entity.Permission;
 import cn.devspace.nucleus.App.Permission.entity.impl.PermissionImpl;
+import cn.devspace.nucleus.Message.Log;
 import cn.devspace.nucleus.NucleusApplication;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -24,6 +25,8 @@ import org.springframework.util.DigestUtils;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import java.util.Arrays;
+import java.util.List;
 
 @Component
 /**
@@ -96,6 +99,23 @@ public class permissionManager {
             }
         }
         return false;
+    }
+
+    /**
+     * 获取权限组
+     * @param token 权限码 Permission code
+     * @return 权限组 Permission group
+     */
+    public List<String> getPermissionList(String token){
+        QueryWrapper<Permission> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("token", token);
+        Permission permission = permissionManager.permissionBaseMapper.selectOne(queryWrapper);
+        if (permission == null){
+            return null;
+        }
+        String permissionString = permission.getPermission();
+        String[] array = PermissionString2Array(permissionString);
+        return List.of(array);
     }
 
     public boolean checkPermission(String token, String[] permissionGroup) {
