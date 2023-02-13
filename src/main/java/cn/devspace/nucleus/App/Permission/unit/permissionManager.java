@@ -68,6 +68,21 @@ public class permissionManager {
     }
 
     /**
+     * 将权限组转换为权限码
+     * Convert permission group to permission code
+     * @param permissionGroup
+     * @return
+     */
+    public String newPermission(List<String> permissionGroup){
+        String[] result = new String[permissionGroup.size()+5];
+        for (int i = 0; i < permissionGroup.size(); i++) {
+            result[i] = permissionGroup.get(i);
+        }
+        return newPermission(result);
+    }
+
+
+    /**
      * 创建一个新的权限组
      * Create a new permission group
      * @param permissionGroup  权限组 Permission group

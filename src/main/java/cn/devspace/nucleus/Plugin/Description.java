@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.util.Map;
 
 public class Description {
+    private boolean enabled = true;
 
     private String name;
     private String author;
@@ -20,11 +21,17 @@ public class Description {
     public Description(String YamlString) {
         Yaml yml = new Yaml();
         this.LoadMap(yml.loadAs(YamlString, Map.class));
+        if (this.name != null && this.main != null ) {
+              setEnabled(true);
+        }
     }
 
     public Description(InputStream YamlInputStream) {
         Yaml yml = new Yaml();
         this.LoadMap(yml.loadAs(YamlInputStream, Map.class));
+        if (this.name != null && this.main != null ) {
+            setEnabled(true);
+        }
     }
 
     public void LoadMap(Map<String, Object> map) {
@@ -79,5 +86,13 @@ public class Description {
 
     public String getLanguage() {
         return language;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }

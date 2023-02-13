@@ -22,6 +22,11 @@ public class ManagerBase extends LangBase {
         return gson.toJson(Map);
     }
 
+    public static String Map2Json(Map<String, Object> Map, boolean isObject) {
+        Gson gson = new Gson();
+        return gson.toJson(Map);
+    }
+
     /**
      * 构造简单的返回数据
      * @param code 返回的代码
@@ -37,6 +42,15 @@ public class ManagerBase extends LangBase {
         return Response;
     }
 
+    public Map<String, Object> makeResponse(int code, int status, String Message, Object data) {
+        Map<String, Object> Response = new HashMap<>();
+        Response.put("code", code);
+        Response.put("status", status);
+        Response.put("message", Message);
+        Response.put("data", data);
+        return Response;
+    }
+
     /**
      * 狗仔简单的返回数据Json字符串
      * @param code 返回的代码
@@ -45,7 +59,19 @@ public class ManagerBase extends LangBase {
      * @return 返回构造完毕的json字符串
      */
     public String ResponseString(int code, int status, String Message) {
-        return this.Map2Json(this.makeResponse(code, status, Message));
+        return Map2Json(this.makeResponse(code, status, Message));
+    }
+
+    /**
+     * 构造简单的返回数据Json字符串
+     * @param code 返回的代码
+     * @param status 返回的状态
+     * @param Message 返回的信息
+     * @param data 返回的数据
+     * @return 返回构造完毕的json字符串
+     */
+    public Object ResponseObject(int code, int status, String Message, Object data) {
+        return Map2Json(makeResponse(code, status, Message, data), true);
     }
 
     /**
