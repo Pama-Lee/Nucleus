@@ -63,54 +63,40 @@ public class Unit {
         return result;
     }
 
-    /**
-     * 加载指定路径下所有Class文件
-     * @param classPath
-     */
-    public static void findFullClassName(String classPath, boolean recursive) throws NoSuchMethodException, MalformedURLException, InvocationTargetException, IllegalAccessException, ClassNotFoundException {
-        //遍历过滤好的文件
-        for (File file : findFiles(classPath,recursive)) {
-            //如果文件是目录
+
+    // 获取路径及子目录下的所有class文件
+    // 需要通过文件目录获取class的包名
+    public static Set<String> getClassesFromDir(File dir) {
+        Set<String> result = new HashSet<>();
+        File[] files = dir.listFiles(new FileFilter() {
+            @Override
+            public boolean accept(File pathname) {
+                return pathname.isDirectory() || pathname.getName().endsWith(".class");
+            }
+        });
+        for (File file : files) {
             if (file.isDirectory()) {
-                //调用当前方法
-                findFullClassName(file.getPath(), true);  //路径为文件路径
-            }else{
-                Method method = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
-                //如果是class文件 则去除 后缀 .class
-                Server.devPluginClass.add(file.toURI().toURL());
-                // 将当前类路径加入到类加载器中
-                String className = file.getName().substring(0, file.getName().lastIndexOf(".class"));
-                //添加包名到list
+                result.addAll(getClassesFromDir(file));
+            } else {
+                String name = file.getName();
+                name = name.substring(0, name.length() - 6);
+                result.add(getPackageName(file.getPath()));
             }
         }
-    }
-    /**
-     * 获取路径下所有的 .class 文件 和  文件夹
-     *
-     * @param filePath  文件目录
-     * @param recursive 是否查询子文件夹
-     * @return 文件
-     */
-    public static File[] findFiles(String filePath, boolean recursive) {
-        //过滤出 class文件 和 目录
-        return new File(filePath).listFiles(file ->
-                (file.isFile() && file.getName().endsWith(".class")) ||
-                        (file.isDirectory() && recursive));
+        return result;
     }
 
 
-    public static ClassLoader createDirectoryLoader(String directory) throws URISyntaxException, IOException {
-        Collection<URL> urls = new ArrayList<URL>();
-        File dir = new File(directory);
-        File[] files = dir.listFiles();
-        for (File f : files) {
-            System.out.println(f.getCanonicalPath());
-            urls.add(f.toURI().toURL());
-        }
+    // 将路径转换为包名
+    public static String getPackageName(String path) {
+        String filePath = path;
+        String root = "classes" + System.getProperty("file.separator");
+        String classPath = filePath.substring(filePath.indexOf(root) + root.length());
+        classPath = classPath.split("\\.")[0];
+        String res= classPath.replace(System.getProperty("file.separator"), ".");
 
-        return URLClassLoader.newInstance(urls.toArray(new URL[urls.size()]));
+        return res;
     }
-
 
 
 }

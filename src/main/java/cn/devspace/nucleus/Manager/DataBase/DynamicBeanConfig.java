@@ -53,7 +53,7 @@ public class DynamicBeanConfig {
                 if (!pluginBase.isEnabled()) {
                     for (String clazz : pluginBase.allClazz) {
                         try {
-                            URLClassLoader urlClassLoader = (URLClassLoader) classLoaderManager.getClassLoader(pluginBase.classLoaderHashCode);
+                            ClassLoader urlClassLoader =  classLoaderManager.getClassLoader(pluginBase.classLoaderHashCode);
                             Class<BaseMapper> clazs = (Class<BaseMapper>) urlClassLoader.loadClass(clazz);
                             if (clazs.isAnnotationPresent(TableName.class)) {
                                 entityClassSet.add(clazs);

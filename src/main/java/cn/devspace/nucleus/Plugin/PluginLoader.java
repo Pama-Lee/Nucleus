@@ -123,7 +123,11 @@ public class PluginLoader implements Loader {
                                     if (PluginBase.class.isAssignableFrom(pluginClass)) {
                                         PluginBase pluginBase = (PluginBase) pluginClass.getConstructor().newInstance();
 
+                                        Set<String> clazz = Unit.getClassesFromDir(new File(RunPath + "plugins/" + pluginName));
+                                        pluginBase.allClazz = clazz;
                                         pluginBase.setDescription(description);
+                                        pluginBase.classLoaderHashCode = classLoaderHashCode;
+                                        pluginBase.setPluginName(description.getName());
                                         // 首选加载框架指定的语言文件
                                         String lang = server.getLanguage();
                                         File langFile = new File(s.getPath() + "/resources/language/" + lang + ".ini");
