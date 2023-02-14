@@ -13,6 +13,7 @@
 package cn.devspace.nucleus.Manager;
 
 import cn.devspace.nucleus.Manager.Annotation.version.Nucleus;
+import cn.devspace.nucleus.Manager.ClassLoader.DevClassLoader;
 import cn.devspace.nucleus.Manager.ClassLoader.PluginClassLoader;
 import cn.devspace.nucleus.Manager.ClassLoader.defaultClassLoader;
 import cn.devspace.nucleus.Server.Server;
@@ -33,6 +34,10 @@ public class ClassLoaderFactory {
     public URLClassLoader createURLClassLoaderTemplate(File file) throws MalformedURLException {
         //使用第一次创建的Server中的构造器
         return new PluginClassLoader(Server.getInstance().getClass().getClassLoader(), file);
+    }
+
+    public DevClassLoader createDevClassLoaderTemplate(String pluginPath) throws MalformedURLException {
+        return new DevClassLoader(pluginPath);
     }
 
 

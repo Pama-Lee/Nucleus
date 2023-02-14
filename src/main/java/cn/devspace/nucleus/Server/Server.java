@@ -4,16 +4,16 @@ import cn.devspace.nucleus.App.Console.Console;
 import cn.devspace.nucleus.Lang.LangBase;
 import cn.devspace.nucleus.Manager.Annotation.version.Nucleus;
 import cn.devspace.nucleus.Manager.BeanManager;
+import cn.devspace.nucleus.Manager.ClassLoader.DevClassLoader;
+import cn.devspace.nucleus.Manager.ClassLoader.PluginClassLoader;
 import cn.devspace.nucleus.Manager.ClassLoaderManager;
 import cn.devspace.nucleus.Manager.Command.CommandBase;
 import cn.devspace.nucleus.Manager.DataBase.DataBaseManager;
 import cn.devspace.nucleus.Manager.ManagerBase;
 import cn.devspace.nucleus.Manager.SettingManager;
 import cn.devspace.nucleus.Message.Log;
-import cn.devspace.nucleus.Plugin.AppBase;
-import cn.devspace.nucleus.Plugin.AppLoader;
-import cn.devspace.nucleus.Plugin.PluginBase;
-import cn.devspace.nucleus.Plugin.PluginLoader;
+import cn.devspace.nucleus.Plugin.*;
+import cn.devspace.nucleus.Units.Unit;
 import org.springframework.core.io.ClassPathResource;
 
 import javax.annotation.Resource;
@@ -21,16 +21,15 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class Server extends ManagerBase {
 
-    public static final String VERSION = "0.0.2-alpha";
+    public static final String VERSION = "0.0.3-alpha";
     public static final String AUTHOR = "Pama Lee";
 
     public static final String NAME = "Nucleus(JAVA)";
@@ -52,6 +51,8 @@ public class Server extends ManagerBase {
     public static Map<String, Map<CommandBase, Method>> CommandMap = new HashMap<>();
 
     public static Map<String,String> CommandHelpMessage = new HashMap<>();
+
+    public static List<URL> devPluginClass = new ArrayList<>();
 
     @Resource
     public BeanManager beanManager;
@@ -120,9 +121,22 @@ public class Server extends ManagerBase {
 
         String classLoaderPluginHash = classLoaderManager.createClassLoader();
 
-        //AppLoader.loadApps(this);
-        initApps(false);
-        initPlugins(false);
+        String runningMode =  settingManager.getSetting("DevelopMode");
+
+        if (!runningMode.equals("true")) {
+            initApps(false);
+            initPlugins(false);
+        }else {
+            initApps(false);
+            Log.sendWarn(TranslateOne("App.Run.DevelopMode"));
+            PluginLoader pL = new PluginLoader(this, null,classLoaderManager);
+            PluginList = pL.getDevPlugin();
+            LoadPlugin();
+            EnablePlugin();
+        }
+
+
+
         Log.sendLog(TranslateOne("App.Run.UseMemory", getUsedMemory()));
     }
 
@@ -202,6 +216,7 @@ public class Server extends ManagerBase {
                 AppBase appClass = AppList.get(app);
                 BeanManager.registerBean(app,appClass.getClass());
                 appClass.onEnabled();
+                appClass.setEnabled();
             }
         }catch (Exception e){
             Log.sendWarn(TranslateOne("App.EnabledError",cApp,e.getMessage()));

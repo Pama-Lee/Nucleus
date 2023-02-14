@@ -8,6 +8,7 @@ import cn.devspace.nucleus.Server.Server;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.DigestUtils;
 
+import java.io.File;
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Map;
@@ -66,13 +67,11 @@ abstract public class PluginBase extends ManagerBase implements Loader {
         Log.sendAppMessage(new Exception().getStackTrace()[1].getClassName(), log);
     }
 
-    protected LangBase loadLanguage() {
-        String language = getLanguage();
+
+    protected LangBase loadLanguage(LangBase langBase) {
         try {
-            InputStream langStream = new ClassPathResource("app/" + this.PluginName + "/Language/" + language + ".ini").getInputStream();
-            LangBase lb = new LangBase(langStream);
-            PluginLang = lb;
-            return lb;
+            PluginLang = langBase;
+            return langBase;
         } catch (Exception e) {
             Log.sendWarn(e.toString());
             disableApp();

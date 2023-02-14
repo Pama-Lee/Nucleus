@@ -13,6 +13,7 @@
 package cn.devspace.nucleus.Manager;
 
 import cn.devspace.nucleus.Manager.Annotation.version.Nucleus;
+import cn.devspace.nucleus.Manager.ClassLoader.DevClassLoader;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -56,6 +57,12 @@ public class ClassLoaderManager {
         URLClassLoader urlClassLoader = classLoaderFactory.createURLClassLoaderTemplate(file);
         return  putLoaderMap(urlClassLoader);
     }
+
+    public String createDevClassLoader(String pluginPath) throws MalformedURLException {
+        DevClassLoader devClassLoader = classLoaderFactory.createDevClassLoaderTemplate(pluginPath);
+        return  putLoaderMap(devClassLoader);
+    }
+
     /**
      * 直接通过类加载器的哈希值拿到类加载器
      * @param hashCode 哈希值
@@ -64,6 +71,8 @@ public class ClassLoaderManager {
     public ClassLoader getClassLoader(String hashCode){
         return classLoaderMap.get(hashCode);
     }
+
+
 
     /**
      *

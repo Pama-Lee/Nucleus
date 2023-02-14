@@ -1,0 +1,5 @@
+Name: Permission
+Author: Pama Lee
+Version: 1.0.0
+Main: cn.devspace.nucleus.App.Permission.Main
+Description: A simple permission manager

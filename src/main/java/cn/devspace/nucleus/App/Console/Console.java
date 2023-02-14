@@ -1,6 +1,7 @@
 package cn.devspace.nucleus.App.Console;
 
 import cn.devspace.nucleus.App.Console.Thread.ConsoleThread;
+import cn.devspace.nucleus.App.Permission.unit.permissionManager;
 import cn.devspace.nucleus.Manager.Annotation.Commands;
 import cn.devspace.nucleus.Manager.Command.CommandBase;
 import cn.devspace.nucleus.Manager.Command.CommandManager;
@@ -77,7 +78,9 @@ public class Console extends AppBase implements CommandBase {
     @Commands(Command = "test", help = "测试命令")
     public String test(String[] args){
         //Log.sendLog(Server.RouterList.toString());
-        testBaseMapper.selectList(null);
+        String[] permission = {"user","president"};
+        permissionManager pm = new permissionManager();
+        sendLog(String.valueOf(pm.checkPermission("415afed39e320608880aa9adcd8388e4",permission)));
         return null;
     }
 

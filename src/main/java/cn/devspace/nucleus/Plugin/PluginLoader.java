@@ -2,6 +2,7 @@ package cn.devspace.nucleus.Plugin;
 
 import cn.devspace.nucleus.Lang.LangBase;
 import cn.devspace.nucleus.Manager.BeanManager;
+import cn.devspace.nucleus.Manager.ClassLoader.DevClassLoader;
 import cn.devspace.nucleus.Manager.ClassLoaderManager;
 import cn.devspace.nucleus.Manager.ClassManager;
 import cn.devspace.nucleus.Message.Log;
@@ -14,7 +15,9 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
 import java.net.URLClassLoader;
 import java.util.HashMap;
 import java.util.Map;
@@ -76,6 +79,89 @@ public class PluginLoader implements Loader {
             Log.sendWarn("无法载入插件描述文件");
         }
         return null;
+    }
+
+    public Description getDescription(File nucleusYaml) {
+        try {
+            // 读取nucleus.yml文件
+            InputStream stream = nucleusYaml.toURI().toURL().openStream();
+            return new Description(stream);
+        } catch (Exception ie) {
+            Log.sendWarn("无法载入插件描述文件");
+        }
+        return null;
+    }
+
+
+    public Map<String, PluginBase> getDevPlugin() {
+        // 获取plugins文件夹下的所有的文件夹
+        if (!new File(RunPath + "plugins/").exists()) {
+            return null;
+        } else {
+            Map<String, PluginBase> res = new HashMap<>();
+            File[] list = new File(RunPath + "plugins/").listFiles();
+            if (list != null) {
+                for (File s : list) {
+                    // 如果为文件夹, 则进入加载了流程
+                    if (s.isDirectory()) {
+                        // 寻找文件夹下的nucleus.yml文件
+                        File nucleus = new File(s.getPath() + "/nucleus.yml");
+                        // 如果存在这个, 则判定为插件
+                        if (nucleus.exists()) {
+                            Description description = getDescription(nucleus);
+                            // 如果配置文件有效
+                            if (description.isEnabled()) {
+
+                                String main = description.getMain();
+                                String pluginName = description.getName();
+                                Log.sendLog(server.TranslateOne("Plugin.LoadDev", pluginName));
+                                try {
+                                    String classLoaderHashCode = classLoaderManager.createDevClassLoader(RunPath + "plugins/" + pluginName + "/");
+                                    DevClassLoader urlClassLoader = (DevClassLoader) classLoaderManager.getClassLoader(classLoaderHashCode);
+                                    Class<?> pluginClass = urlClassLoader.loadClass(main);
+                                    // 如果插件类继承了PluginBase类
+                                    if (PluginBase.class.isAssignableFrom(pluginClass)) {
+                                        PluginBase pluginBase = (PluginBase) pluginClass.getConstructor().newInstance();
+
+                                        Set<String> clazz = Unit.getClassesFromDir(new File(RunPath + "plugins/" + pluginName));
+                                        pluginBase.allClazz = clazz;
+                                        pluginBase.setDescription(description);
+                                        pluginBase.classLoaderHashCode = classLoaderHashCode;
+                                        pluginBase.setPluginName(description.getName());
+                                        // 首选加载框架指定的语言文件
+                                        String lang = server.getLanguage();
+                                        File langFile = new File(s.getPath() + "/resources/language/" + lang + ".ini");
+                                        if (langFile.exists()) {
+                                            LangBase langBase = new LangBase(langFile.toURI().toURL().openStream());
+                                            pluginBase.setPluginLang(langBase);
+                                        } else {
+                                            // 寻找插件的语言文件
+                                            File PluginLang = new File(s.getPath() + "/resources/language/" + description.getLanguage() + ".ini");
+                                            if (PluginLang.exists()) {
+                                                LangBase langBase = new LangBase(PluginLang.toURI().toURL().openStream());
+                                                pluginBase.setPluginLang(langBase);
+                                            }
+                                        }
+
+                                        res.put(pluginName, pluginBase);
+
+                                    } else {
+                                        Log.sendWarn(Server.getInstance().TranslateOne("Plugin.Not.PluginBase", pluginName));
+                                        continue;
+                                    }
+                                } catch (IOException | ClassNotFoundException | InvocationTargetException |
+                                         InstantiationException | IllegalAccessException | NoSuchMethodException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+
+                        }
+                    }
+                }
+                return res;
+            }
+            return null;
+        }
     }
 
 

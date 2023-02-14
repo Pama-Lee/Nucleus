@@ -58,12 +58,15 @@ public class Request extends HttpServlet {
             for (Map<String, String> method : router.get(app).keySet()) {
                 Map<Map<String, String>, Class<?>> AppRouters = router.get(app);
                 String ReqURI = httpServletRequest.getRequestURI();
-                // Log.sendLog(ReqURI);
-                // Log.sendLog("/App/" + app + "/" + method.get("R"));
-                if (ReqURI.equals("/App/" + app + "/" + method.get("R"))) {
+                 StringBuilder sb = new StringBuilder();
+                 sb.append("/App/").append(app).append("/").append(method.get("R"));
+                 String url = sb.toString();
+                if (ReqURI.equals(url)) {
+                    Log.sendLog("匹配");
                     try {
                         AppBase ab = Server.AppList.get(app);
                         String pb = Server.PluginRoute.get(app);
+                        Map<String,String> json = Server.PluginRoute;
                         // Log.sendLog(AppRouters.toString());
                         if (ab != null) {
                             return toRoute(method, AppRouters,params);
@@ -72,6 +75,8 @@ public class Request extends HttpServlet {
                             app = Server.PluginRoute.get(app);
                             return toRoute(method, AppRouters,params);
                         }
+                        Log.sendLog(app);
+                        Log.sendLog("匹配不到方法");
                     } catch (Exception e){
                         Log.sendWarn(e.toString());
                     }
