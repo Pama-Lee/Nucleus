@@ -8,6 +8,7 @@ import cn.devspace.nucleus.Manager.ClassLoader.DevClassLoader;
 import cn.devspace.nucleus.Manager.ClassLoader.PluginClassLoader;
 import cn.devspace.nucleus.Manager.ClassLoaderManager;
 import cn.devspace.nucleus.Manager.Command.CommandBase;
+import cn.devspace.nucleus.Manager.DataBase.AutoGenerator;
 import cn.devspace.nucleus.Manager.DataBase.DataBaseManager;
 import cn.devspace.nucleus.Manager.ManagerBase;
 import cn.devspace.nucleus.Manager.SettingManager;
@@ -134,6 +135,7 @@ public class Server extends ManagerBase {
             LoadPlugin();
             EnablePlugin();
         }
+        AutoGenerator autoGenerator = new AutoGenerator();
 
 
 
