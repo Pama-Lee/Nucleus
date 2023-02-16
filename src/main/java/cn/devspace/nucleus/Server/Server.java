@@ -130,6 +130,12 @@ public class Server extends ManagerBase {
         }else {
             initApps(false);
             Log.sendWarn(TranslateOne("App.Run.DevelopMode"));
+            // 线程暂停3秒
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             PluginLoader pL = new PluginLoader(this, null,classLoaderManager);
             PluginList = pL.getDevPlugin();
             LoadPlugin();
