@@ -1,8 +1,11 @@
 package cn.devspace.nucleus;
 
+import cn.devspace.nucleus.App.VisitLobby.Entity.Visit;
+import cn.devspace.nucleus.App.VisitLobby.Main;
 import cn.devspace.nucleus.Message.Log;
 import cn.devspace.nucleus.Plugin.AppBase;
 import cn.devspace.nucleus.Server.Server;
+import cn.devspace.nucleus.Units.Unit;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServlet;
@@ -62,7 +65,19 @@ public class Request extends HttpServlet {
                  sb.append("/App/").append(app).append("/").append(method.get("R"));
                  String url = sb.toString();
                 if (ReqURI.equals(url)) {
-                    Log.sendLog("匹配");
+                    if (Server.AppList.get("VisitLobby") != null) {
+                        // 写入浏览记录
+                        Visit visit = new Visit();
+                        visit.setVisitIp(Unit.getIpAddr(httpServletRequest));
+                        visit.setVisitUrl(url);
+                        visit.setVisitTime(System.currentTimeMillis());
+                        visit.setApp(app);
+                        visit.setVisitReferer(httpServletRequest.getHeader("Referer"));
+                        visit.setVisitMethod(httpServletRequest.getMethod());
+                        visit.setVisitAgent(httpServletRequest.getHeader("User-Agent"));
+                        // 加入队列
+                        Main.newVisit(visit);
+                    }
                     try {
                         AppBase ab = Server.AppList.get(app);
                         String pb = Server.PluginRoute.get(app);
@@ -75,8 +90,6 @@ public class Request extends HttpServlet {
                             app = Server.PluginRoute.get(app);
                             return toRoute(method, AppRouters,params);
                         }
-                        Log.sendLog(app);
-                        Log.sendLog("匹配不到方法");
                     } catch (Exception e){
                         Log.sendWarn(e.toString());
                     }

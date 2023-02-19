@@ -1,0 +1,5 @@
+Name: MailLobby
+Main: cn.devspace.nucleus.App.MailLobby.Main
+Version: 1.0.0
+Author: Pama Lee
+Description: A App for managing mail

@@ -141,12 +141,33 @@ public class Server extends ManagerBase {
             LoadPlugin();
             EnablePlugin();
         }
-        AutoGenerator autoGenerator = new AutoGenerator();
+
+        if (settingManager.getSetting("Automatically_Generate_Data_Tables").equals("true")){
+            //初始化数据库
+            AutoGenerator autoGenerator = new AutoGenerator();
+        }
+
 
 
 
         Log.sendLog(TranslateOne("App.Run.UseMemory", getUsedMemory()));
     }
+
+
+    public void reloadDevPlugin(){
+        for (String key: PluginRoute.keySet()){
+            if (PluginList.containsKey(PluginRoute.get(key))){
+                PluginRoute.remove(key);
+                reloadDevPlugin();
+                return;
+            }
+        }
+        PluginLoader pL = new PluginLoader(this, null,classLoaderManager);
+        PluginList = pL.getDevPlugin();
+        LoadPlugin();
+        EnablePlugin();
+    }
+
 
     public void initPlugins(boolean reload){
         if (reload){

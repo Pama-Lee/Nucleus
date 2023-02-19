@@ -9,6 +9,7 @@ import cn.devspace.nucleus.Message.Log;
 import cn.devspace.nucleus.Server.Server;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.DigestUtils;
+import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -95,6 +96,25 @@ abstract public class AppBase extends ManagerBase {
             return null;
         }
 
+    }
+
+    protected Map<String, Object> getConfig() {
+        Map<String, Object> config = new HashMap<>();
+        try {
+            // 检查是否存在配置
+            if (!new ClassPathResource("app/" + this.AppName + "/config.yml").exists()) {
+                Log.sendWarn(this.AppName+" Config file not found");
+                return null;
+            }
+            InputStream configStream = new ClassPathResource("app/" + this.AppName + "/config.yml").getInputStream();
+            // 将yml文件转换为Map
+            Yaml yaml = new Yaml();
+            config = yaml.load(configStream);
+        } catch (Exception e) {
+            Log.sendWarn(e.toString());
+            disableApp();
+        }
+        return config;
     }
 
     public void setDescription(Description des) {

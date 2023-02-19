@@ -55,9 +55,25 @@ public class Console extends AppBase implements CommandBase {
 
     @Commands(Command = "reload",help = "/reload [参数一],参数一可选:plugin,server,app. 重启服务器选定部分")
     public String reload(String[] args){
-        if (!args[0].isEmpty() & "plugin".equals(args[0])){
-            sendLog("重新加载插件中...");
-            Server.getInstance().initPlugins(true);
+        // 判断参数是否为空
+        if (args != null){
+            switch (args[0]){
+                case "plugin":
+                    sendLog("重新加载插件中...");
+                    Server.getInstance().initPlugins(true);
+                    break;
+                case "dev":
+                    sendLog("重新加载开发插件中...");
+                    Server.getInstance().reloadDevPlugin();
+                    break;
+                case "app":
+                    sendLog("重新加载应用中...");
+                    Server.getInstance().initApps(true);
+                    break;
+                default:
+                    sendLog("请检查参数");
+                    break;
+            }
         }else {
             sendLog("请检查参数");
         }

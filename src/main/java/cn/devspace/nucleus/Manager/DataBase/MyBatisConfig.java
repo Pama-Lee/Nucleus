@@ -3,6 +3,7 @@ package cn.devspace.nucleus.Manager.DataBase;
 import cn.devspace.nucleus.Manager.SettingManager;
 import cn.devspace.nucleus.Message.Log;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import org.apache.ibatis.datasource.DataSourceFactory;
 import org.apache.ibatis.mapping.Environment;
 import org.apache.ibatis.session.Configuration;
@@ -13,6 +14,7 @@ import org.apache.ibatis.transaction.TransactionFactory;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.apache.ibatis.type.TypeAliasRegistry;
 import org.mybatis.spring.mapper.MapperFactoryBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 
 
@@ -23,8 +25,15 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import static com.baomidou.mybatisplus.extension.toolkit.SqlHelper.sqlSessionFactory;
-
+@org.springframework.context.annotation.Configuration
+@ConditionalOnClass(value = {PaginationInterceptor.class})
 public class MyBatisConfig {
+
+        @Bean
+        public PaginationInterceptor paginationInterceptor() {
+            PaginationInterceptor paginationInterceptor = new PaginationInterceptor();
+            return paginationInterceptor;
+        }
 
     public SqlSessionFactory addMapper(Class<?> clazz) {
         // Get DataSource object.
