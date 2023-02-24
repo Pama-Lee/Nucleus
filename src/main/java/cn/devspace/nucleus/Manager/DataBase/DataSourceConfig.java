@@ -17,7 +17,7 @@ import java.util.Map;
 @AutoConfigureAfter(SpringUtil.class)
 public class DataSourceConfig {
 
-   @Bean
+   @Bean(name = "dataSource")
    public DataSource getDataSource(){
       SettingManager settingManager = new SettingManager();
       Map<String,String> map = settingManager.getMapSetting("DataBase");

@@ -1,5 +1,6 @@
 package cn.devspace.nucleus.Plugin;
 
+import cn.devspace.nucleus.Entity.RouterClazz;
 import cn.devspace.nucleus.Manager.AnnotationManager;
 import cn.devspace.nucleus.Manager.BeanManager;
 import cn.devspace.nucleus.Manager.RouterBase;
@@ -62,8 +63,10 @@ public class AppLoader implements Loader {
                     String main = appDes.getMain();
                     Class<?> c = Class.forName(main);
                     AppBase app = (AppBase) c.getDeclaredConstructor().newInstance();
-                    Map<Map<String, String>, Class<?>> maps = AnnotationManager.getRouterAnnotation((Class<RouterBase>) c);
-                    Server.RouterList.put(apps, maps);
+                    //Map<Map<String, String>, Class<?>> maps = AnnotationManager.getRouterAnnotation((Class<RouterBase>) c);
+                    RouterClazz routerClazz = AnnotationManager.getRouterAnnotation(appDes.getRoute(), c);
+                    //Server.RouterList.put(apps, maps);
+                    Server.RouterListNew.add(routerClazz);
                     app.setDescription(appDes);
                     Log.AppStart(Server.getInstance().Translators("App.Start", apps));
                     app.localApp(apps);

@@ -1,7 +1,10 @@
 package cn.devspace.nucleus.Server;
 
 import cn.devspace.nucleus.App.Console.Console;
+import cn.devspace.nucleus.Entity.RouterClazz;
+import cn.devspace.nucleus.Entity.UploadRouter;
 import cn.devspace.nucleus.Lang.LangBase;
+import cn.devspace.nucleus.Manager.Annotation.Router;
 import cn.devspace.nucleus.Manager.Annotation.version.Nucleus;
 import cn.devspace.nucleus.Manager.BeanManager;
 import cn.devspace.nucleus.Manager.ClassLoader.DevClassLoader;
@@ -30,7 +33,7 @@ import java.util.*;
 
 public class Server extends ManagerBase {
 
-    public static final String VERSION = "0.0.3-alpha";
+    public static final String VERSION = "0.0.4-alpha";
     public static final String AUTHOR = "Pama Lee";
 
     public static final String NAME = "Nucleus(JAVA)";
@@ -47,7 +50,16 @@ public class Server extends ManagerBase {
 
     public static Map<String, AppBase> AppList = new HashMap<>();
     public static Map<String, PluginBase> PluginList = new HashMap<>();
+    @Deprecated
     public static Map<String, Map<Map<String, String>, Class<?>>> RouterList = new HashMap<>();
+
+    @Nucleus("0.0.4")
+    public static List<RouterClazz> RouterListNew = new ArrayList<>();
+
+    @Nucleus("0.0.4")
+    public static Map<String, UploadRouter> UploadRouterList = new HashMap<>();
+
+
     public static Map<String, String> PluginRoute = new HashMap<>();
     public static Map<String, Map<CommandBase, Method>> CommandMap = new HashMap<>();
 

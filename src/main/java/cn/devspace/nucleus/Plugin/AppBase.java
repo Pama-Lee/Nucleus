@@ -1,6 +1,8 @@
 package cn.devspace.nucleus.Plugin;
 
 
+import cn.devspace.nucleus.Entity.Router;
+import cn.devspace.nucleus.Entity.RouterClazz;
 import cn.devspace.nucleus.Lang.LangBase;
 import cn.devspace.nucleus.Manager.AnnotationManager;
 import cn.devspace.nucleus.Manager.DataManager;
@@ -12,7 +14,9 @@ import org.springframework.util.DigestUtils;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -46,14 +50,22 @@ abstract public class AppBase extends ManagerBase {
     }
 
     protected void initRoute(Class<?> classes) {
-        Map<Map<String, String>, Class<?>> maps = AnnotationManager.getRouterAnnotation(classes);
-        if (!Server.RouterList.get(getDescription().getRoute()).isEmpty()){
-           // Log.sendLog(Server.RouterList.toString());
-            for(Map<String,String> temp:maps.keySet()){
-                Server.RouterList.get(getDescription().getRoute()).put(temp,maps.get(temp));
+        RouterClazz routerClazz = AnnotationManager.getRouterAnnotation(getDescription().getRoute(), classes);
+
+        boolean isExist = false;
+        // 查询是否已经存在路由
+        for (RouterClazz temp : Server.RouterListNew) {
+            if (temp.getRouteName().equals(routerClazz.getRouteName())) {
+                // 合并List
+                List<Router> newRouters = new ArrayList<>();
+                newRouters.addAll(temp.getRouters());
+                newRouters.addAll(routerClazz.getRouters());
+                temp.setRouters(newRouters);
+                isExist = true;
             }
-        }else {
-            Server.RouterList.put(getDescription().getRoute(),maps);
+        }
+        if (!isExist) {
+            Server.RouterListNew.add(routerClazz);
         }
         Server.PluginRoute.put(getDescription().getRoute(), AppName);
     }

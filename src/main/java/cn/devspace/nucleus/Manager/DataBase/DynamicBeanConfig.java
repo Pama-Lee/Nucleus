@@ -72,9 +72,10 @@ public class DynamicBeanConfig {
                         if (tableName == null) {
                             continue;
                         }
-
-                        String mapperClassName = cPlugin + "." + entityClass.getSimpleName() + "Mapper";
-                        String serviceClassName = cPlugin + "." + entityClass.getSimpleName() + "Service";
+                        // 随机字符
+                        String random = String.valueOf(System.currentTimeMillis());
+                        String mapperClassName = cPlugin + "." + entityClass.getSimpleName() + "Mapper" + random;
+                        String serviceClassName = cPlugin + "." + entityClass.getSimpleName() + "Service"+ random;
 
                         /* 创建 mapper */
                         Class<?> mapperClass = new ByteBuddy()

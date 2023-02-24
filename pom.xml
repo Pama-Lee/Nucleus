@@ -10,7 +10,7 @@
     </parent>
     <groupId>cn.dev-space</groupId>
     <artifactId>Nucleus</artifactId>
-    <version>0.0.3-API</version>
+    <version>0.0.4-API</version>
     <name>Nucleus</name>
     <description>Nucleus</description>
     <licenses>
@@ -222,6 +222,11 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+
         </plugins>
     </build>
 

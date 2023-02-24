@@ -1,7 +1,6 @@
 package cn.devspace.nucleus.Manager;
 
 import cn.devspace.nucleus.Manager.Annotation.InterfaceScan;
-import cn.devspace.nucleus.Manager.DataBase.MyBatisConfig;
 import cn.devspace.nucleus.Message.Log;
 import cn.devspace.nucleus.Plugin.PluginBase;
 import cn.devspace.nucleus.Server.Server;

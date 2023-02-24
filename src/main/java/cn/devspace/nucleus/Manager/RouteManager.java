@@ -1,6 +1,7 @@
 package cn.devspace.nucleus.Manager;
 
 
+import cn.devspace.nucleus.Entity.RouterClazz;
 import cn.devspace.nucleus.Message.Log;
 import cn.devspace.nucleus.Plugin.Loader;
 import cn.devspace.nucleus.Server.Server;
@@ -37,8 +38,8 @@ public class RouteManager extends ManagerBase {
 
 
     public static void registerRouter(Loader loader, String routeName, Class<RouterBase> classes) {
-        Map<Map<String, String>, Class<?>> maps = AnnotationManager.getRouterAnnotation(classes);
-        Server.RouterList.put(routeName, maps);
+        RouterClazz routerClazz = AnnotationManager.getRouterAnnotation(routeName, classes);
+        Server.RouterListNew.add(routerClazz);
     }
 
     public String getLanguage() {
