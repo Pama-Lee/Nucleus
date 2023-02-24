@@ -17,13 +17,17 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Data
 @TableName("permission")
+@Entity
+@Table(name = "permission")
 public class Permission extends DataEntity {
     @TableId
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long pid;
     private String token;
     private String permission;

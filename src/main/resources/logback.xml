@@ -5,7 +5,7 @@
         </encoder>
     </appender>
     <logger name="org.hibernate" level="warn" />
-    <logger name="org.hibernate.SQL" level="debug" />
+    <logger name="org.hibernate.SQL" level="warn" />
     <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="warn" />
     <logger name="org.hibernate.type.BasicTypeRegistry" level="warn" />
     <logger name="net.sf.ehcache" level="warn" />

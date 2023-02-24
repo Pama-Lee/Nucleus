@@ -12,8 +12,10 @@
 
 package cn.devspace.nucleus.App.Permission;
 
+import cn.devspace.nucleus.App.Permission.entity.Permission;
 import cn.devspace.nucleus.App.Permission.unit.permissionManager;
 import cn.devspace.nucleus.Lang.LangBase;
+import cn.devspace.nucleus.Manager.DataBase.DataBase;
 import cn.devspace.nucleus.Plugin.AppBase;
 import cn.devspace.nucleus.Units.Unit;
 
@@ -26,5 +28,6 @@ public class Main extends AppBase {
         this.langBase = loadLanguage();
         sendLog(this.langBase.TranslateOne("Loading"));
         String[] group = {"president","developer","manager"};
+        DataBase dataBase = new DataBase(this.getClass(), new Permission());
     }
 }

@@ -18,7 +18,6 @@ public class DevClassLoader extends ClassLoader {
         String classFileName = name.replace(".", File.separator) + ".class";
         // 只需要最后的文件名
         String c = classFileName.substring(classFileName.lastIndexOf(File.separator) + 1);
-        Log.sendLog("Loading class: " + c);
         File classFile = findFile(new File(dir), c, name);
         if (classFile == null) {
             throw new ClassNotFoundException(name);

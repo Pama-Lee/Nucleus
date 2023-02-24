@@ -14,10 +14,14 @@ package cn.devspace.nucleus.App.Permission.unit;
 
 import cn.devspace.nucleus.App.Permission.entity.Permission;
 import cn.devspace.nucleus.App.Permission.entity.impl.PermissionImpl;
+import cn.devspace.nucleus.Manager.DataBase.DataBase;
 import cn.devspace.nucleus.Message.Log;
 import cn.devspace.nucleus.NucleusApplication;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.hibernate.Criteria;
+import org.hibernate.Session;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -39,15 +43,19 @@ public class permissionManager {
      * 权限组数据库操作
      * Permission group database operation
      */
-    @Autowired
-    public PermissionImpl permissionBaseMapper;
+
+    public DataBase dataBase;
 
     public static permissionManager permissionManager = new permissionManager();
 
 
     @PostConstruct
     public void setPermissionBaseMapper(){
-        permissionManager.permissionBaseMapper = permissionBaseMapper;
+        permissionManager.dataBase = new DataBase(this.getClass(), new Permission());
+    }
+
+    public Session getSession(){
+        return dataBase.getSession();
     }
 
     /**
@@ -63,7 +71,9 @@ public class permissionManager {
         String token = DigestUtils.md5DigestAsHex((System.currentTimeMillis()+permissionString).getBytes());
         permission.setToken(token);
         // TODO: 2023/1/31 保存到数据库 Save to database
-        permissionManager.permissionBaseMapper.insert(permission);
+        Session session = permissionManager.getSession();
+        session.save(permission);
+        session.getTransaction().commit();
         return token;
     }
 
@@ -100,9 +110,10 @@ public class permissionManager {
      * @return 是否有权限 Has permission
      */
     public boolean checkPermission(String token, String permissionGroup){
-        QueryWrapper<Permission> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("token", token);
-        Permission permission = permissionManager.permissionBaseMapper.selectOne(queryWrapper);
+        Session session = permissionManager.getSession();
+        Criteria criteria = session.createCriteria(Permission.class);
+        criteria.add(Restrictions.eq("token", token));
+        Permission permission = (Permission) criteria.uniqueResult();
         if (permission == null){
             return false;
         }
@@ -122,9 +133,10 @@ public class permissionManager {
      * @return 权限组 Permission group
      */
     public List<String> getPermissionList(String token){
-        QueryWrapper<Permission> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("token", token);
-        Permission permission = permissionManager.permissionBaseMapper.selectOne(queryWrapper);
+        Session session = permissionManager.getSession();
+        Criteria criteria = session.createCriteria(Permission.class);
+        criteria.add(Restrictions.eq("token", token));
+        Permission permission = (Permission) criteria.uniqueResult();
         if (permission == null){
             return null;
         }
@@ -134,9 +146,10 @@ public class permissionManager {
     }
 
     public boolean checkPermission(String token, String[] permissionGroup) {
-        QueryWrapper<Permission> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("token", token);
-        Permission permission = permissionManager.permissionBaseMapper.selectOne(queryWrapper);
+        Session session = permissionManager.getSession();
+        Criteria criteria = session.createCriteria(Permission.class);
+        criteria.add(Restrictions.eq("token", token));
+        Permission permission = (Permission) criteria.uniqueResult();
         if (permission == null) {
             return false;
         }

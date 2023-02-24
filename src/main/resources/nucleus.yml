@@ -1,10 +1,47 @@
 ##
-##LangList: chs:中文
+##可选语言:   chs:中文
 ##          en: English
 ##
 app.language: chs
-Reload.404: yes
+
+
+### 选择配置SPA应用
+### 可选值: Vue, React, Angular
+### 如果不配置, 则不会加载SPA应用, 会导致SPA应用刷新后404
+### 此选项仅适用与使用Nucleus作为前端加载器的情况, 即在Nucleus的Pages目录下放置了SPA应用
+Reload.404: Vue
+
+### 数据库配置
+### 此项必填, 注意: port必须为字符串类型
+DataBase:
+  database: login
+  username: root
+  password: root
+  port: "3306"
+
+### 开启的内建应用
+### 此项必填, 且至少开启一个应用
+### 可选值: Login, Register, Console, Permission
 EnableApp:
   - Login
   - Register
   - Console
+  - Permission
+  - MailLobby
+  - VisitLobby
+
+### 是否开启开发模式
+### 开启后, 插件可以文件夹形式加载, 无需打包
+DevelopMode: "true"
+
+### 是否开启依据实体类自动生成数据表
+Automatically_Generate_Data_Tables: "false"
+
+mail.lobby:
+  sender: "Moss"
+  method: smtp
+  host: smtp.ym.163.com
+  port: "465"
+  user: rootjam@pamalee.cn
+  password: ljk1249072779
+  auth: "true"

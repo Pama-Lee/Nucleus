@@ -1,13 +1,17 @@
 package cn.devspace.nucleus.Server;
 
 import cn.devspace.nucleus.App.Console.Console;
+import cn.devspace.nucleus.Entity.RouterClazz;
+import cn.devspace.nucleus.Entity.UploadRouter;
 import cn.devspace.nucleus.Lang.LangBase;
+import cn.devspace.nucleus.Manager.Annotation.Router;
 import cn.devspace.nucleus.Manager.Annotation.version.Nucleus;
 import cn.devspace.nucleus.Manager.BeanManager;
 import cn.devspace.nucleus.Manager.ClassLoader.DevClassLoader;
 import cn.devspace.nucleus.Manager.ClassLoader.PluginClassLoader;
 import cn.devspace.nucleus.Manager.ClassLoaderManager;
 import cn.devspace.nucleus.Manager.Command.CommandBase;
+import cn.devspace.nucleus.Manager.DataBase.AutoGenerator;
 import cn.devspace.nucleus.Manager.DataBase.DataBaseManager;
 import cn.devspace.nucleus.Manager.ManagerBase;
 import cn.devspace.nucleus.Manager.SettingManager;
@@ -29,7 +33,7 @@ import java.util.*;
 
 public class Server extends ManagerBase {
 
-    public static final String VERSION = "0.0.3-alpha";
+    public static final String VERSION = "0.0.4-alpha";
     public static final String AUTHOR = "Pama Lee";
 
     public static final String NAME = "Nucleus(JAVA)";
@@ -46,7 +50,16 @@ public class Server extends ManagerBase {
 
     public static Map<String, AppBase> AppList = new HashMap<>();
     public static Map<String, PluginBase> PluginList = new HashMap<>();
+    @Deprecated
     public static Map<String, Map<Map<String, String>, Class<?>>> RouterList = new HashMap<>();
+
+    @Nucleus("0.0.4")
+    public static List<RouterClazz> RouterListNew = new ArrayList<>();
+
+    @Nucleus("0.0.4")
+    public static Map<String, UploadRouter> UploadRouterList = new HashMap<>();
+
+
     public static Map<String, String> PluginRoute = new HashMap<>();
     public static Map<String, Map<CommandBase, Method>> CommandMap = new HashMap<>();
 
@@ -129,16 +142,44 @@ public class Server extends ManagerBase {
         }else {
             initApps(false);
             Log.sendWarn(TranslateOne("App.Run.DevelopMode"));
+            // 线程暂停3秒
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             PluginLoader pL = new PluginLoader(this, null,classLoaderManager);
             PluginList = pL.getDevPlugin();
             LoadPlugin();
             EnablePlugin();
         }
 
+        if (settingManager.getSetting("Automatically_Generate_Data_Tables").equals("true")){
+            //初始化数据库
+            AutoGenerator autoGenerator = new AutoGenerator();
+        }
+
+
 
 
         Log.sendLog(TranslateOne("App.Run.UseMemory", getUsedMemory()));
     }
+
+
+    public void reloadDevPlugin(){
+        for (String key: PluginRoute.keySet()){
+            if (PluginList.containsKey(PluginRoute.get(key))){
+                PluginRoute.remove(key);
+                reloadDevPlugin();
+                return;
+            }
+        }
+        PluginLoader pL = new PluginLoader(this, null,classLoaderManager);
+        PluginList = pL.getDevPlugin();
+        LoadPlugin();
+        EnablePlugin();
+    }
+
 
     public void initPlugins(boolean reload){
         if (reload){

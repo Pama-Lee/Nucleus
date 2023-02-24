@@ -1,5 +1,7 @@
 package cn.devspace.nucleus.Plugin;
 
+import cn.devspace.nucleus.Entity.Router;
+import cn.devspace.nucleus.Entity.RouterClazz;
 import cn.devspace.nucleus.Lang.LangBase;
 import cn.devspace.nucleus.Manager.AnnotationManager;
 import cn.devspace.nucleus.Manager.ManagerBase;
@@ -10,9 +12,7 @@ import org.springframework.util.DigestUtils;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 abstract public class PluginBase extends ManagerBase implements Loader {
 
@@ -51,13 +51,22 @@ abstract public class PluginBase extends ManagerBase implements Loader {
     }
 
     protected void initRoute(Class<?> classes) {
-        Map<Map<String, String>, Class<?>> maps = AnnotationManager.getRouterAnnotation(classes);
-        if (Server.RouterList.get(getDescription().getRoute()) != null){
-            for(Map<String,String> temp:maps.keySet()){
-                Server.RouterList.get(getDescription().getRoute()).put(temp,maps.get(temp));
+        RouterClazz routerClazz = AnnotationManager.getRouterAnnotation(getDescription().getRoute(), classes);
+
+        boolean isExist = false;
+        // 查询是否已经存在路由
+        for (RouterClazz temp : Server.RouterListNew) {
+            if (temp.getRouteName().equals(routerClazz.getRouteName())) {
+                // 合并List
+                List<Router> newRouters = new ArrayList<>();
+                newRouters.addAll(temp.getRouters());
+                newRouters.addAll(routerClazz.getRouters());
+                temp.setRouters(newRouters);
+                isExist = true;
             }
-        }else {
-            Server.RouterList.put(getDescription().getRoute(),maps);
+        }
+        if (!isExist) {
+            Server.RouterListNew.add(routerClazz);
         }
         Server.PluginRoute.put(getDescription().getRoute(), PluginName);
     }
@@ -116,6 +125,19 @@ abstract public class PluginBase extends ManagerBase implements Loader {
     public void setPluginName(String name){
         this.PluginName = name;
         this.key =  DigestUtils.md5DigestAsHex((String.valueOf(System.currentTimeMillis())+name+Server.getServerVersion()).getBytes());
+    }
+
+    public String getPluginDataPath(){
+        // 替换\为/
+        String s = Server.RunPath+"PluginData"+File.separator+this.PluginName+File.separator;
+        // 检查目录是否存在
+File file = new File(s);
+if (file.exists() && file.isDirectory()) {
+        return s;
+    }else {
+        file.mkdirs();
+        return s;
+    }
     }
 
     protected String getLocalPlugin() {

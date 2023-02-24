@@ -16,4 +16,6 @@ public @interface Router {
 
     @AliasFor(attribute = "value")
     String URI() default "";
+
+    boolean isUpload() default false;
 }
