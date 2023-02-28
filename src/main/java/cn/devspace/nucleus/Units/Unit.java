@@ -8,13 +8,12 @@ import org.apache.commons.lang.ClassUtils;
 import org.apache.tomcat.Jar;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.io.Serial;
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -133,6 +132,65 @@ public class Unit {
         }
         return ipAddress;
     }
+
+    public static String readConfigFile(JarFile jarFile ,JarEntry jarEntry) {
+        String content = "";
+        try {
+            // 指定文件编码
+
+            Charset charset = StandardCharsets.UTF_8;
+            InputStream inputStream = jarFile.getInputStream(jarEntry);
+            InputStreamReader reader = null;
+            try{
+                reader = new InputStreamReader(inputStream, charset);
+            }catch (Exception e){
+                // 如果文件编码不是UTF-8，就使用GBK编码
+                inputStream = jarFile.getInputStream(jarEntry);
+                reader = new InputStreamReader(inputStream, "GBK");
+            }
+
+            StringBuilder stringBuilder = new StringBuilder();
+            int ch;
+            while ((ch = reader.read()) != -1) {
+                stringBuilder.append((char) ch);
+            }
+
+            content = stringBuilder.toString();
+
+            inputStream.close();
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return content;
+    }
+
+
+
+
+    public static String getFileEncoding(String filePath) {
+        String encoding = "";
+        try {
+            // 使用默认的文件编码读取文件
+            FileInputStream inputStream = new FileInputStream(filePath);
+            InputStreamReader reader = new InputStreamReader(inputStream);
+
+            // 获取编码名称
+            encoding = reader.getEncoding();
+
+            inputStream.close();
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return encoding;
+    }
+
+
+
+
+
+
 
 
 

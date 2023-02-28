@@ -72,9 +72,11 @@ public class PluginLoader implements Loader {
     public Description getDescription(JarFile pluginJar) {
         try {
             JarEntry entry = pluginJar.getJarEntry("nucleus.yml");
-            InputStream stream = null;
-            stream = pluginJar.getInputStream(entry);
-            return new Description(stream);
+//            InputStream stream = null;
+//            stream = pluginJar.getInputStream(entry);
+
+            String config = Unit.readConfigFile(pluginJar, entry);
+            return new Description(config);
         } catch (Exception ie) {
             Log.sendWarn("无法载入插件描述文件");
         }

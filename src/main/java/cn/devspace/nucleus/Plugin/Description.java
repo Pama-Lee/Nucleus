@@ -20,6 +20,7 @@ public class Description {
 
     public Description(String YamlString) {
         Yaml yml = new Yaml();
+        // 转换文件编码， 确保可以读取
         this.LoadMap(yml.loadAs(YamlString, Map.class));
         if (this.name != null && this.main != null ) {
               setEnabled(true);
