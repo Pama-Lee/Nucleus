@@ -29,6 +29,11 @@ public class Log extends MessageBase {
     }
 
     public static String BaseFormat(String METHOD, String Message) {
+        // 检测操作系统
+        // Check the operating system
+        String OS = System.getProperty("os.name").toLowerCase();
+
+
         String Prefix = switch (METHOD) {
             case "LOG" -> Format(PREFIX_LOG, BLUE_COLOR) + Format(PREFIX, WHITE_COLOR);
             case "APP" -> Format(PREFIX_APP, GREEN_COLOR) + Format(PREFIX, WHITE_COLOR);

@@ -1,7 +1,11 @@
 package cn.devspace.nucleus.Message;
 
 import org.fusesource.jansi.Ansi;
+import org.fusesource.jansi.AnsiConsole;
 
+import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -51,9 +55,19 @@ public class MessageBase implements Message {
      * @return
      */
     public static String Format(String Message, int[] Color) {
-        Ansi tool = new Ansi();
-        Ansi Format = tool.fgRgb(Color[0], Color[1], Color[2]).a(Message).reset();
-        return Format.toString();
+        // 在 Windows 上设置控制台编码为 UTF-8
+        if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+            System.setOut(new PrintStream(System.out, true, StandardCharsets.UTF_8));
+            System.setErr(new PrintStream(System.err, true, StandardCharsets.UTF_8));
+        }
+
+        AnsiConsole.systemInstall(); // 在 Windows 上安装 JLine 控制台
+        Ansi ansi = Ansi.ansi();
+        ansi = ansi.fgRgb(Color[0], Color[1], Color[2]).a(Message).reset();
+        String formatted = ansi.toString();
+        AnsiConsole.systemUninstall(); // 在 Windows 上卸载 JLine 控制台
+
+        return formatted;
     }
 
     public static String getTime() {
