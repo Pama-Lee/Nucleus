@@ -1,7 +1,10 @@
 package cn.devspace.nucleus.Manager.DataBase;
 
+import cn.devspace.nucleus.Manager.SettingManager;
 import cn.devspace.nucleus.Message.Log;
 import cn.devspace.nucleus.Plugin.DataEntity;
+import cn.devspace.nucleus.Server.Server;
+import cn.devspace.nucleus.Units.Unit;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.BootstrapServiceRegistry;
@@ -66,14 +69,22 @@ public class DataBase{
     }
 
     public static Session initDatabase(Class<?> clazz,DataEntity dataEntity,Properties properties) {
+        // 获取数据库
+        SettingManager settingManager = new SettingManager();
+        Map<String,String> map = settingManager.getMapSetting("DataBase");
+        String[] params = {"database","port","username","password"};
+        if (!Unit.checkParams(map,params)){
+            Log.sendWarn("未配置完成数据源");
+            return null;
+        }
+
         try {
             Properties prop;
             if (properties == null){
                 prop = new Properties();
-
-                prop.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/login");
-                prop.setProperty("hibernate.connection.username", "root");
-                prop.setProperty("hibernate.connection.password", "root");
+                prop.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:"+map.get("port")+"/"+map.get("database")+"?characterEncoding=utf-8");
+                prop.setProperty("hibernate.connection.username", map.get("username"));
+                prop.setProperty("hibernate.connection.password", map.get("password"));
                 prop.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
                 prop.setProperty("hibernate.show_sql", "false");
                 prop.setProperty("hibernate.format_sql", "false");

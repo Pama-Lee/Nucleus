@@ -42,6 +42,7 @@ public class AnnotationManager {
                 Server.UploadRouterList.put(appName+'/'+router.URI(), uploadRouter);
             }
         }
+
         return routerClazz;
     }
 

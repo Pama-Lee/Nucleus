@@ -32,7 +32,7 @@ EnableApp:
 
 ### 是否开启开发模式
 ### 开启后, 插件可以文件夹形式加载, 无需打包
-DevelopMode: "true"
+DevelopMode: "false"
 
 ### 是否开启依据实体类自动生成数据表
 Automatically_Generate_Data_Tables: "false"

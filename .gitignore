@@ -29,4 +29,5 @@ target
 /out
 /Pages
 nuclues.yml
+/PluginData
 #排除控制台

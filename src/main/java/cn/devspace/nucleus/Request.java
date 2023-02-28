@@ -29,7 +29,7 @@ import java.util.Set;
 @CrossOrigin
 public class Request extends HttpServlet {
     @GetMapping("/App/**")
-    public Object Router(HttpServletRequest request) {
+    public Object GetRouter(@RequestParam(required = false) Map<String, String> params, HttpServletRequest request) {
         List<RouterClazz> router = Server.RouterListNew;
         Set<String> map = Server.PluginRoute.keySet();
         for(RouterClazz routerClazz : router){
@@ -38,18 +38,21 @@ public class Request extends HttpServlet {
                 // 成功匹配
                 if (request.getRequestURI().equals(url)){
                     String app = Server.PluginRoute.get(routerClazz.getRouteName());
-
+//                    Log.sendLog(request.getRequestURI());
+//                    Log.sendLog(url);
+//                    Log.sendLog("匹配");
                     try {
                         AppBase ab = Server.AppList.get(app);
-                        String pb = Server.PluginRoute.get(app);
+                        String pb = Server.PluginRoute.get(routerClazz.getRouteName());
                         // Log.sendLog(AppRouters.toString());
                         if (ab != null) {
-                            return toRoute(router1,null);
+                            return toRoute(router1,params);
                         }
                         if (pb != null) {
                             app = Server.PluginRoute.get(app);
-                            return toRoute(router1,null);
+                            return toRoute(router1,params);
                         }
+                        Log.sendWarn("未知错误");
                     } catch (Exception e){
                         Log.sendWarn(e.getStackTrace()[0].toString());
                     }
@@ -97,8 +100,13 @@ public class Request extends HttpServlet {
                             // 如果params是Map<String, String>类型的话
                             if (isStringMap(params))
                             {
+
                                 Map<String, String> newParams = new HashMap<>();
                                 for (String key : params.keySet()) {
+                                    // 去除null值
+                                    if (params.get(key) == null) {
+                                        continue;
+                                    }
                                     newParams.put(key, params.get(key).toString());
                                 }
                                 return toRoute(router1,newParams);
@@ -112,6 +120,9 @@ public class Request extends HttpServlet {
                             {
                                 Map<String, String> newParams = new HashMap<>();
                                 for (String key : params.keySet()) {
+                                    if (params.get(key) == null) {
+                                        continue;
+                                    }
                                     newParams.put(key, params.get(key).toString());
                                 }
                                 return toRoute(router1,newParams);
@@ -162,10 +173,6 @@ public class Request extends HttpServlet {
 
 
     private Object toRoute(Router appRouters,Map<String,String> json) {
-        //当为GET请求时
-        if (json == null){
-            json = new HashMap<>();
-        }
         try {
             Method methods = appRouters.getClazz().getMethod(appRouters.getMethod(), Map.class);
             Object m = methods.invoke(appRouters.getClazz().getConstructor().newInstance(), json);
@@ -236,6 +243,9 @@ public class Request extends HttpServlet {
 
     public static boolean isStringMap(Map<String, Object> map) {
         for (Object value : map.values()) {
+            if (value == null) {
+                continue;
+            }
             if (!(value instanceof String) && !(value instanceof Integer ) && !(value instanceof Long) && !(value instanceof Double) && !(value instanceof Float) && !(value instanceof Boolean)) {
                 return false;
             }
