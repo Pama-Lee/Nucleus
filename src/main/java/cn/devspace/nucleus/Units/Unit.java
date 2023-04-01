@@ -45,7 +45,7 @@ public class Unit {
         return true;
     }
 
-    public static Set<String> getClassesFromJar(JarFile jar){
+    public static Set<String> getClassesFromJar(JarFile jar, String packageName){
         Set<String> result = new HashSet<>();
         Enumeration<JarEntry> entrys = jar.entries();
         while (entrys.hasMoreElements()){
@@ -54,6 +54,9 @@ public class Unit {
                 String name = jarEntry.getName();
                 name =  name.replace(".class","");
                 name = name.replace("/",".");
+                if (packageName != null && !name.contains(packageName)){
+                    continue;
+                }
                 result.add(name);
             }
         }
@@ -63,7 +66,7 @@ public class Unit {
 
     // 获取路径及子目录下的所有class文件
     // 需要通过文件目录获取class的包名
-    public static Set<String> getClassesFromDir(File dir) {
+    public static Set<String> getClassesFromDir(File dir, String packageName) {
         Set<String> result = new HashSet<>();
         File[] files = dir.listFiles(new FileFilter() {
             @Override
@@ -73,11 +76,19 @@ public class Unit {
         });
         for (File file : files) {
             if (file.isDirectory()) {
-                result.addAll(getClassesFromDir(file));
+                result.addAll(getClassesFromDir(file, packageName));
             } else {
                 String name = file.getName();
                 name = name.substring(0, name.length() - 6);
-                result.add(getPackageName(file.getPath()));
+                // 如果packageName不为空, 且name必须包含packageName, 否则删除
+                String path = getPackageName(file.getPath());
+                if (packageName != null ) {
+                    Log.sendLog("path:"+path);
+                }
+                if (packageName != null && !path.contains(packageName)) {
+                    continue;
+                }
+                result.add(path);
             }
         }
         return result;

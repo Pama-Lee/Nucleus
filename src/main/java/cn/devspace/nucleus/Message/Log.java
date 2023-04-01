@@ -1,26 +1,38 @@
 package cn.devspace.nucleus.Message;
 
 import cn.devspace.nucleus.Server.Server;
+import org.fusesource.jansi.AnsiConsole;
+
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 
 public class Log extends MessageBase {
 
     private static String plugin = null;
 
     public static void AppStart(String AppName) {
+        AnsiConsole.systemInstall(); 
         System.out.print(BaseFormat(METHOD_APP, AppName));
+        AnsiConsole.systemUninstall(); 
     }
 
     public static void sendLog(String Message) {
+        AnsiConsole.systemInstall(); 
         System.out.print(BaseFormat(METHOD_LOG, Message));
+        AnsiConsole.systemUninstall(); 
     }
 
     public static void sendAppMessage(String App, String Message) {
+        AnsiConsole.systemInstall(); 
         plugin = App;
         System.out.print(BaseFormat(METHOD_APPMESSAGE, Message));
+        AnsiConsole.systemUninstall(); 
     }
 
     public static void sendWarn(String Message) {
+        AnsiConsole.systemInstall(); 
         System.out.print(BaseFormat(METHOD_WARN, Message));
+        AnsiConsole.systemUninstall(); 
     }
 
     public static void sendError(String Message, int Code) {
@@ -32,7 +44,11 @@ public class Log extends MessageBase {
         // 检测操作系统
         // Check the operating system
         String OS = System.getProperty("os.name").toLowerCase();
-
+            if (OS.contains("windows")) {
+            // 在 Windows 上设置控制台编码为 UTF-8
+            // Set the console encoding to UTF-8 on Windows
+            System.setOut(new PrintStream(System.out, true, StandardCharsets.UTF_8));
+        }
 
         String Prefix = switch (METHOD) {
             case "LOG" -> Format(PREFIX_LOG, BLUE_COLOR) + Format(PREFIX, WHITE_COLOR);

@@ -18,6 +18,8 @@ public class Description {
     private String route = null;
     private String language = null;
 
+    private String packageName = null;
+
     public Description(String YamlString) {
         Yaml yml = new Yaml();
         // 转换文件编码， 确保可以读取
@@ -46,6 +48,7 @@ public class Description {
             this.dbType = (String) map.get("DatabaseType");
             this.route = (String) map.get("Route");
             this.language = (String) map.get("Language");
+            this.packageName = (String) map.get("Package");
         }
     }
 
@@ -76,6 +79,10 @@ public class Description {
 
     public String getDataBase() {
         return this.dbName;
+    }
+
+    public String getPackageName() {
+        return this.packageName;
     }
 
     public String getRoute() {

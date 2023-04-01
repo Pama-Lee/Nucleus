@@ -61,11 +61,11 @@ public class MessageBase implements Message {
             System.setErr(new PrintStream(System.err, true, StandardCharsets.UTF_8));
         }
 
-        AnsiConsole.systemInstall(); // 在 Windows 上安装 JLine 控制台
+
         Ansi ansi = Ansi.ansi();
         ansi = ansi.fgRgb(Color[0], Color[1], Color[2]).a(Message).reset();
         String formatted = ansi.toString();
-        AnsiConsole.systemUninstall(); // 在 Windows 上卸载 JLine 控制台
+
 
         return formatted;
     }

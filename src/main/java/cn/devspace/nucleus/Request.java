@@ -11,6 +11,7 @@ import cn.devspace.nucleus.Plugin.AppBase;
 import cn.devspace.nucleus.Server.Server;
 import cn.devspace.nucleus.Units.Unit;
 import com.google.gson.Gson;
+import org.springframework.http.MediaType;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -63,34 +64,17 @@ public class Request extends HttpServlet {
     }
 
     // 可同时接收文件和参数
-    @PostMapping(path = "/App/**")
+    @PostMapping(path = "/App/**", produces = {MediaType.APPLICATION_JSON_VALUE,  MediaType.APPLICATION_OCTET_STREAM_VALUE})
+    @CrossOrigin(origins = "*", maxAge = 3600)
     public Object Router(@RequestBody Map<String, Object> params
             , HttpServletRequest httpServletRequest){
-
-
         List<RouterClazz> router = Server.RouterListNew;
-        Set<String> map = Server.PluginRoute.keySet();
-
         for(RouterClazz routerClazz : router){
             for (Router router1 : routerClazz.getRouters()){
                 String url = "/App/" + routerClazz.getRouteName() + "/" + router1.getURL();
                 // 成功匹配
                 if (httpServletRequest.getRequestURI().equals(url)){
                     String app = Server.PluginRoute.get(routerClazz.getRouteName());
-
-                    if (Server.AppList.get("VisitLobby") != null) {
-                        // 写入浏览记录
-                        Visit visit = new Visit();
-                        visit.setVisitIp(Unit.getIpAddr(httpServletRequest));
-                        visit.setVisitUrl(url);
-                        visit.setVisitTime(System.currentTimeMillis());
-                        visit.setApp(app);
-                        visit.setVisitReferer(httpServletRequest.getHeader("Referer"));
-                        visit.setVisitMethod(httpServletRequest.getMethod());
-                        visit.setVisitAgent(httpServletRequest.getHeader("User-Agent"));
-                        // 加入队列
-                        Main.newVisit(visit);
-                    }
 
                     try {
                         AppBase ab = Server.AppList.get(app);
@@ -100,7 +84,6 @@ public class Request extends HttpServlet {
                             // 如果params是Map<String, String>类型的话
                             if (isStringMap(params))
                             {
-
                                 Map<String, String> newParams = new HashMap<>();
                                 for (String key : params.keySet()) {
                                     // 去除null值

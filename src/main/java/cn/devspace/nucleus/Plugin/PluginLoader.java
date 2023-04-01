@@ -124,8 +124,8 @@ public class PluginLoader implements Loader {
                                     // 如果插件类继承了PluginBase类
                                     if (PluginBase.class.isAssignableFrom(pluginClass)) {
                                         PluginBase pluginBase = (PluginBase) pluginClass.getConstructor().newInstance();
-
-                                        Set<String> clazz = Unit.getClassesFromDir(new File(RunPath + "plugins/" + pluginName));
+                                        String packageName = description.getPackageName();
+                                        Set<String> clazz = Unit.getClassesFromDir(new File(RunPath + "plugins/" + pluginName), packageName);
                                         pluginBase.allClazz = clazz;
                                         pluginBase.setDescription(description);
                                         pluginBase.classLoaderHashCode = classLoaderHashCode;
@@ -185,9 +185,8 @@ public class PluginLoader implements Loader {
                             String hashCode = classLoaderManager.createURLClassLoader(pluginFile);
                             URLClassLoader urlClassLoader = (URLClassLoader) classLoaderManager.getClassLoader(hashCode);
                             JarFile pluginJar = new JarFile(RunPath + "plugins/" + s);
-
-                            Set<String> set = Unit.getClassesFromJar(pluginJar);
                             Description description = getDescription(pluginJar);
+                            Set<String> set = Unit.getClassesFromJar(pluginJar, description.getPackageName());
                             String lang = Server.getInstance().Language;
                             LangBase langBase = null;
                             //当存在语言文件时

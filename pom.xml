@@ -10,7 +10,7 @@
     </parent>
     <groupId>cn.dev-space</groupId>
     <artifactId>Nucleus</artifactId>
-    <version>0.0.4-API</version>
+    <version>0.0.5</version>
     <name>Nucleus</name>
     <description>Nucleus</description>
     <licenses>
@@ -44,6 +44,8 @@
     </distributionManagement>
     <properties>
         <java.version>17</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
     <dependencies>
         <dependency>

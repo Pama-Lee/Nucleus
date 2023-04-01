@@ -73,7 +73,7 @@ abstract public class PluginBase extends ManagerBase implements Loader {
 
 
     protected void sendLog(String log) {
-        Log.sendAppMessage(new Exception().getStackTrace()[1].getClassName(), log);
+        Log.sendAppMessage(getDescription().getName(), log);
     }
 
 

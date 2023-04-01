@@ -2,6 +2,7 @@ package cn.devspace.nucleus.Manager.DataBase;
 
 import cn.devspace.nucleus.Manager.Annotation.DataMapper;
 import cn.devspace.nucleus.Manager.BeanManager;
+import cn.devspace.nucleus.Message.Log;
 import cn.devspace.nucleus.Plugin.DataEntity;
 import cn.devspace.nucleus.Plugin.PluginBase;
 import cn.devspace.nucleus.Server.Server;
