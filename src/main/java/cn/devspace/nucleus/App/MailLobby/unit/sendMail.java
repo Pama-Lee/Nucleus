@@ -22,7 +22,6 @@ public class sendMail {
     private int timeout = 10000;
 
     private String sender;
-    mailPool emailPool = new mailPool(10); // 创建邮件对象池，容量为10
 
 
     public sendMail() {
@@ -39,7 +38,8 @@ public class sendMail {
 
     public boolean sendSimpleEmail(String to, String subject, String content)  {
         try {
-            Email email = emailPool.borrowEmail(5000);
+            // 支持html
+            Email email = new HtmlEmail();
             //配置文件
             email.setHostName(host);
             email.setSmtpPort(Integer.parseInt(port));
@@ -51,14 +51,11 @@ public class sendMail {
             email.setSubject(subject);
             email.setMsg(content);
             email.addTo(to);
-            emailPool.sendEmail(email);
-        } catch (EmailException | InterruptedException e) {
+            EmailQueue.getInstance().addEmail(email);
+        } catch (EmailException e) {
            Log.sendWarn(e.toString());
            return false;
-        }finally {
-            emailPool.close();
         }
-
         return true;
         }
 

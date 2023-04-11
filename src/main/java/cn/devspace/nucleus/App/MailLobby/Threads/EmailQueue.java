@@ -1,29 +1,45 @@
 package cn.devspace.nucleus.App.MailLobby.Threads;
-
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-
 import org.apache.commons.mail.Email;
-import org.apache.commons.mail.EmailException;
-import org.apache.commons.mail.SimpleEmail;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class EmailQueue {
-    private final BlockingQueue<Email> emailQueue;
-    private final Thread emailThread;
+    // 单例模式
+    private static EmailQueue emailQueue = new EmailQueue();
+    private final CopyOnWriteArrayList<Email> emailList = new CopyOnWriteArrayList<>();
 
-    public EmailQueue() {
-        emailQueue = new ArrayBlockingQueue<>(100); // 消息队列容量为100
-        emailThread = new Thread(new SenderThread(emailQueue)); // 创建邮件处理线程
-        emailThread.start(); // 启动邮件处理线程
+    private EmailSender emailSender = new EmailSender();
+
+    public static EmailQueue getInstance() {
+        if (emailQueue == null) {
+            emailQueue = new EmailQueue();
+        }
+        return emailQueue;
     }
 
-    public void addEmail(Email email) throws InterruptedException {
-        emailQueue.put(email); // 将邮件加入消息队列
+    public void addEmail(Email email) {
+        // 检查emailSender是否死亡
+        if (!emailSender.isAlive()) {
+            emailSender = new EmailSender();
+            emailSender.start();
+        }
+        emailList.add(email);
     }
 
-    public void close() {
-        emailThread.interrupt(); // 中断邮件处理线程
+    public void removeEmail(Email email) {
+        emailList.remove(email);
     }
+
+    public List<Email> getEmailList() {
+        return emailList;
+    }
+
+
 
 }
+
 

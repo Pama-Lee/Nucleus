@@ -29,6 +29,9 @@ import org.springframework.util.DigestUtils;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.Arrays;
 import java.util.List;
 
@@ -55,6 +58,11 @@ public class permissionManager {
     }
 
     public Session getSession(){
+        if (!dataBase.getSession().getTransaction().isActive()) {
+            dataBase.getSession().beginTransaction();
+        }
+        // 清除缓存
+        dataBase.getSession().clear();
         return dataBase.getSession();
     }
 
@@ -132,17 +140,20 @@ public class permissionManager {
      * @param token 权限码 Permission code
      * @return 权限组 Permission group
      */
-    public List<String> getPermissionList(String token){
-        Session session = permissionManager.getSession();
-        Criteria criteria = session.createCriteria(Permission.class);
-        criteria.add(Restrictions.eq("token", token));
-        Permission permission = (Permission) criteria.uniqueResult();
-        if (permission == null){
-            return null;
+    public List<String> getPermissionList(String token) {
+        try (Session session = permissionManager.getSession()) {
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<Permission> query = builder.createQuery(Permission.class);
+            Root<Permission> root = query.from(Permission.class);
+            query.where(builder.equal(root.get("token"), token));
+            Permission permission = session.createQuery(query).uniqueResult();
+            if (permission == null) {
+                return null;
+            }
+            String permissionString = permission.getPermission();
+            String[] array = PermissionString2Array(permissionString);
+            return List.of(array);
         }
-        String permissionString = permission.getPermission();
-        String[] array = PermissionString2Array(permissionString);
-        return List.of(array);
     }
 
     public boolean checkPermission(String token, String[] permissionGroup) {

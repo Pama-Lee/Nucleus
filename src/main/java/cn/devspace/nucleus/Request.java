@@ -167,6 +167,7 @@ public class Request extends HttpServlet {
         }catch (InvocationTargetException ite){
             Log.sendWarn(appRouters.getURL()+"路由出现错误");
             Log.sendWarn(ite.getTargetException().getMessage());
+            ite.printStackTrace();
         } catch (Exception e){
             Log.sendWarn(appRouters.getURL()+"路由出现错误");
             e.printStackTrace();
@@ -191,6 +192,7 @@ public class Request extends HttpServlet {
         }catch (InvocationTargetException ite){
             Log.sendWarn(appRouters.getURL()+"路由出现错误");
             Log.sendWarn(ite.getTargetException().getMessage());
+            ite.printStackTrace();
         } catch (Exception e){
             Log.sendWarn(appRouters.getURL()+"路由出现错误");
             e.printStackTrace();

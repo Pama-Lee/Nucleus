@@ -17,7 +17,7 @@ public class ManagerBase extends LangBase {
      * @param Map 传入Map数据
      * @return 返回String类型json
      */
-    public static String Map2Json(Map<String, String> Map) {
+    public static String Map2Json(Map<String, Object> Map) {
         Gson gson = new Gson();
         return gson.toJson(Map);
     }
@@ -34,10 +34,10 @@ public class ManagerBase extends LangBase {
      * @param Message 返回的信息
      * @return 返回构造完毕的Map数据
      */
-    public Map<String, String> makeResponse(int code, int status, String Message) {
-        Map<String, String> Response = new HashMap<>();
-        Response.put("code", String.valueOf(code));
-        Response.put("status", String.valueOf(status));
+    public Map<String, Object> makeResponse(int code, int status, String Message) {
+        Map<String, Object> Response = new HashMap<>();
+        Response.put("code", code);
+        Response.put("status", status);
         Response.put("message", Message);
         return Response;
     }
@@ -79,7 +79,7 @@ public class ManagerBase extends LangBase {
      * @param Path 配置文件地址
      * @return 返回key和value均为string的数据
      */
-    public static Map<String, String> getSingeYaml(String Path) {
+    public static Map<String, Object> getSingeYaml(String Path) {
         Yaml yaml = new Yaml();
         BufferedReader bf = null;
         try {
@@ -143,6 +143,6 @@ public class ManagerBase extends LangBase {
     }
 
     public String getLangSet() {
-        return getSingeYaml(this.getClass().getResource("/nucleus.yml").getPath().substring(1)).get("app.language");
+        return getSingeYaml(this.getClass().getResource("/nucleus.yml").getPath().substring(1)).get("app.language").toString();
     }
 }

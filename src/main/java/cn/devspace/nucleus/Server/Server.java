@@ -395,4 +395,8 @@ public class Server extends ManagerBase {
         return NAME;
     }
 
+    public static String getPort() {
+        return Server.getInstance().settingManager.getSetting("server.port");
+    }
+
 }

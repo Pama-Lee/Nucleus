@@ -19,6 +19,8 @@ public class WebServer implements Runnable {
     @Override
     public void run() {
         Log.sendLog(Server.getInstance().TranslateOne("Server.Open"));
+        // 设置服务器端口
+        System.setProperty("server.port", Server.getPort());
         SpringApplication.run(NucleusApplication.class, this.args);
     }
 }

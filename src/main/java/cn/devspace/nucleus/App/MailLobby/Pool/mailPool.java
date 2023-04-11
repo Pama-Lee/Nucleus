@@ -38,9 +38,4 @@ public class mailPool {
         emailQueue.addEmail(email); // 将邮件加入消息队列
     }
 
-    public void close() {
-        emailQueue.close(); // 关闭邮件发送队列
-    }
-
-
 }

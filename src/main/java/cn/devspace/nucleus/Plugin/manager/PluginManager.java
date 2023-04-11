@@ -2,11 +2,14 @@ package cn.devspace.nucleus.Plugin.manager;
 
 import cn.devspace.nucleus.Manager.Annotation.PluginTransfer;
 import cn.devspace.nucleus.Manager.Annotation.version.Nucleus;
+import cn.devspace.nucleus.Message.Log;
 import cn.devspace.nucleus.Plugin.PluginBase;
 import cn.devspace.nucleus.Server.Server;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -19,7 +22,7 @@ public class PluginManager {
      * 调用插件的方法
      * 目前只支持在加载完毕所有插件后调用
      */
-    public PluginDataTransfer invoke(String packageName, String className, String methodName, Object[] args) {
+    public PluginDataTransfer invoke(String packageName, String className, String methodName, Map<String , Object> args) {
         // 获取PluginList
         Map<String, PluginBase> pluginBaseMap = Server.PluginList;
         for (String key : pluginBaseMap.keySet()) {
@@ -40,7 +43,7 @@ public class PluginManager {
                         if (method.getName().equals(methodName)) {
                             //必须包含PluginTransfer注释
                             if (!method.isAnnotationPresent(PluginTransfer.class)) {
-                                return new PluginDataTransfer("Target Method has no PluginTransfer Annotation");
+                                continue;
                             }
                             // 找到了方法
                             PluginDataTransfer pluginDataTransfer = new PluginDataTransfer();
@@ -61,9 +64,11 @@ public class PluginManager {
                             }
                         }
                     }
+                    // 找不到方法
+                    return new PluginDataTransfer("Method ["+methodName+"] Not Found");
 
                 } catch (Exception e) {
-                    return new PluginDataTransfer("Class Not Found");
+                    return new PluginDataTransfer("Target Method has an error:"+e.getMessage());
                 }
             }
         }
@@ -71,6 +76,44 @@ public class PluginManager {
         // 没有找到插件
         return new PluginDataTransfer("Plugin Not Found");
 
+    }
+
+    /**
+     * 通过反射获取对象的属性和值
+     * @param obj
+     * @return
+     */
+    public static Map<String, Object> createTable(Object obj) {
+        Map<String, Object> table = new HashMap<>();
+
+        Class<?> clazz = obj.getClass();
+        Field[] fields = clazz.getDeclaredFields();
+
+        for (Field field : fields) {
+            try {
+                field.setAccessible(true);
+                Object value = field.get(obj);
+                table.put(field.getName(), value);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+
+        Method[] methods = clazz.getMethods();
+        for (Method method : methods) {
+            if (method.getName().startsWith("get")) {
+                try {
+                    Object value = method.invoke(obj);
+                    String propName = method.getName().substring(3);
+                    propName = propName.substring(0, 1).toLowerCase() + propName.substring(1);
+                    table.put(propName, value);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return table;
     }
 
 }

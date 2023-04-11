@@ -9,8 +9,8 @@ import java.util.Map;
 public class SettingManager extends ManagerBase {
 
     public String getSetting(String key) {
-        Map<String, String> Map = getSingeYaml(Server.RunPath + "resources/nucleus.yml");
-        return Map.get(key);
+        Map<String, Object> Map = getSingeYaml(Server.RunPath + "resources/nucleus.yml");
+        return Map.get(key).toString();
     }
 
     public ArrayList<String> getSetting(String key, boolean array){

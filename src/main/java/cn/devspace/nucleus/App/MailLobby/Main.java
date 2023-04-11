@@ -17,6 +17,5 @@ public class Main extends AppBase {
         sendLog(langBase.TranslateOne("Loading"));
         sendMail sendMail = new sendMail();
        // sendMail.sendSimpleEmail("eee2209292@xmu.edu.my","test","test");
-
     }
 }

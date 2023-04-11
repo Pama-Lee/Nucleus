@@ -5,6 +5,7 @@ import cn.devspace.nucleus.Message.Log;
 import cn.devspace.nucleus.Plugin.DataEntity;
 import cn.devspace.nucleus.Server.Server;
 import cn.devspace.nucleus.Units.Unit;
+import org.hibernate.CacheMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.BootstrapServiceRegistry;
@@ -38,6 +39,14 @@ public class DataBase{
      * @return
      */
     public Session getSession(){
+        // 关闭上一个Session
+        if (this.session != null){
+            this.session.close();
+        }
+        // 关闭Session的一级缓存
+        this.session = concreteSessionFactory.openSession();
+        this.session.setCacheMode(CacheMode.IGNORE);
+        this.session.beginTransaction();
         return this.session;
     }
 
@@ -91,6 +100,8 @@ public class DataBase{
                 prop.setProperty("dialect", "org.hibernate.dialect.Mysql8Dialect");
                 prop.setProperty("hibernate.hbm2ddl.auto", "update");
                 prop.setProperty("org.hibernate", "NONE");
+                // 自动重连
+                prop.setProperty("hibernate.connection.autoreconnect", "true");
             }else {
                 prop = properties;
             }

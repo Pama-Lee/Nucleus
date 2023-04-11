@@ -4,6 +4,7 @@
 ##
 app.language: chs
 
+server.port: 11000
 
 ### 选择配置SPA应用
 ### 可选值: Vue, React, Angular

@@ -42,7 +42,7 @@ public class login extends RouteManager {
                 return ResponseString(101,-1,"非法参数");
             }else {
 
-                Map<String, String> result = new HashMap<>(10);
+                Map<String, Object> result = new HashMap<>(10);
 
                 DataBase dataBase = Login.getDatabase();
                 Session session = dataBase.newSession("user", this.getClass(),new User());

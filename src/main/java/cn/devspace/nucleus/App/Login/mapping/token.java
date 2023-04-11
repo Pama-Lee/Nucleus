@@ -38,7 +38,7 @@ public class token extends RouteManager {
      */
     @Router("getToken")
     public String getToken(Map<String,String> args){
-        Map<String, String> result = new HashMap<>(10);
+        Map<String, Object> result = new HashMap<>(10);
         // TODO: 这里的type应当开放式设计，可写入非指定的内容，内容由所属的Plugin/App提供校验
         String[] params = {"ltoken","type","time","app","appToken"};
         if (!checkParams(args,params)){
