@@ -72,6 +72,10 @@ public class DynamicBeanConfig {
                         if (tableName == null) {
                             continue;
                         }
+
+                        // 将空格替换为下划线
+                        cPlugin = cPlugin.replaceAll(" ", "_");
+
                         // 随机字符
                         String random = String.valueOf(System.currentTimeMillis());
                         String mapperClassName = cPlugin + "." + entityClass.getSimpleName() + "Mapper" + random;
