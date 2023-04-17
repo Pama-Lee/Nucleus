@@ -6,6 +6,7 @@ import cn.devspace.nucleus.Entity.Router;
 import cn.devspace.nucleus.Entity.RouterClazz;
 import cn.devspace.nucleus.Entity.UploadRouter;
 import cn.devspace.nucleus.Manager.Annotation.version.Nucleus;
+import cn.devspace.nucleus.Manager.Log.LogBase;
 import cn.devspace.nucleus.Message.Log;
 import cn.devspace.nucleus.Plugin.AppBase;
 import cn.devspace.nucleus.Server.Server;
@@ -146,6 +147,7 @@ public class Request extends HttpServlet {
                 try {
                     return toRouteFile(uploadRouter,file,params);
                 } catch (Exception e){
+                    LogBase.getInstance().sendLog(e.getMessage(), e);
                     Log.sendWarn(e.getStackTrace()[0].toString());
                 }
             }
@@ -165,10 +167,11 @@ public class Request extends HttpServlet {
                 return null;
             }
         }catch (InvocationTargetException ite){
+            LogBase.getInstance().sendLog(ite.getTargetException().getMessage(), ite);
             Log.sendWarn(appRouters.getURL()+"路由出现错误");
             Log.sendWarn(ite.getTargetException().getMessage());
-            ite.printStackTrace();
         } catch (Exception e){
+            LogBase.getInstance().sendLog(e.getMessage(), e);
             Log.sendWarn(appRouters.getURL()+"路由出现错误");
             e.printStackTrace();
         }
@@ -192,10 +195,12 @@ public class Request extends HttpServlet {
         }catch (InvocationTargetException ite){
             Log.sendWarn(appRouters.getURL()+"路由出现错误");
             Log.sendWarn(ite.getTargetException().getMessage());
+            LogBase.getInstance().sendLog(appRouters.getURL()+"路由出现错误", ite);
             ite.printStackTrace();
         } catch (Exception e){
             Log.sendWarn(appRouters.getURL()+"路由出现错误");
             e.printStackTrace();
+            LogBase.getInstance().sendLog(appRouters.getURL()+"路由出现错误", e);
         }
         return null;
     }
@@ -213,9 +218,11 @@ public class Request extends HttpServlet {
         }catch (InvocationTargetException ite){
             Log.sendWarn(uploadRouter.getURL()+"路由出现错误");
             Log.sendWarn(ite.getTargetException().getMessage());
+            LogBase.getInstance().sendLog(uploadRouter.getURL()+"路由出现错误", ite);
         } catch (Exception e){
             Log.sendWarn(uploadRouter.getURL()+"路由出现错误");
             e.printStackTrace();
+            LogBase.getInstance().sendLog(uploadRouter.getURL()+"路由出现错误", e);
         }
         return null;
     }

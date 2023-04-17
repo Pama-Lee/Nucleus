@@ -30,4 +30,5 @@ target
 /Pages
 nuclues.yml
 /PluginData
+/logs
 #排除控制台

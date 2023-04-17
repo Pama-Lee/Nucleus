@@ -4,6 +4,18 @@
             <pattern>%blue(%d{YYYY-MM-dd-HH:mm:ss.SSS}) %white([%thread]) %yellow(%-5level) %white(%logger{36})-%white(%msg%n)</pattern>
         </encoder>
     </appender>
+    <appender name="ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/nucleus.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>logs/nucleus-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <!-- keep 30 days' worth of history -->
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{YYYY-MM-dd-HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
     <logger name="org.hibernate" level="warn" />
     <logger name="org.hibernate.SQL" level="warn" />
     <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="warn" />
@@ -12,5 +24,6 @@
     <logger name="org.jboss" level="warn" />
     <root level="info">
         <appender-ref ref="STDOUT" />
+        <appender-ref ref="ROLLING" />
     </root>
 </configuration>

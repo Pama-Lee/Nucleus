@@ -13,6 +13,7 @@ import cn.devspace.nucleus.Manager.ClassLoaderManager;
 import cn.devspace.nucleus.Manager.Command.CommandBase;
 import cn.devspace.nucleus.Manager.DataBase.AutoGenerator;
 import cn.devspace.nucleus.Manager.DataBase.DataBaseManager;
+import cn.devspace.nucleus.Manager.Log.LogBase;
 import cn.devspace.nucleus.Manager.ManagerBase;
 import cn.devspace.nucleus.Manager.SettingManager;
 import cn.devspace.nucleus.Message.Log;
@@ -80,11 +81,15 @@ public class Server extends ManagerBase {
 
     private static final Runtime runtime = Runtime.getRuntime();
 
+    public static LogBase logBase = null;
+
     /**
      * 构建服务器
      */
     @Nucleus("0.0.1")
     public Server() {
+        // 初始化日志
+
         init();
         //初始化多语言
         this.lang = new LangBase();
@@ -110,8 +115,6 @@ public class Server extends ManagerBase {
                 if (!newFile) Log.sendError("The configuration file is distributable",12);
                 Files.copy(set, Path.of(RunPath + "resources/nucleus.yml"));
                 Files.copy(route, Path.of(RunPath + "resources/route.yml"));
-
-                Log.sendError("The configuration file is ready, please reopen the program", 200);
             } catch (IOException e) {
                 Log.sendError(e.toString(), 1);
             }
@@ -146,6 +149,7 @@ public class Server extends ManagerBase {
             try {
                 Thread.sleep(3000);
             } catch (InterruptedException e) {
+                LogBase.getInstance().sendLog(e.toString(), e);
                 e.printStackTrace();
             }
             PluginLoader pL = new PluginLoader(this, null,classLoaderManager);
@@ -229,6 +233,7 @@ public class Server extends ManagerBase {
             }
         }catch (Exception e){
             Log.sendWarn(TranslateOne("App.LoadError",cApp,e.getMessage()+" where->"+e.getStackTrace()[0]));
+            LogBase.getInstance().sendLog(e.toString(),e);
             disableApp(cApp);
             LoadApp();
         }
@@ -244,6 +249,7 @@ public class Server extends ManagerBase {
             }
         }catch (Exception e){
             Log.sendWarn(TranslateOne("App.EnableError",cApp,e.getMessage()));
+            LogBase.getInstance().sendLog(e.toString(),e);
             disableApp(cApp);
         }
 
@@ -261,6 +267,7 @@ public class Server extends ManagerBase {
             }
         }catch (Exception e){
             Log.sendWarn(TranslateOne("App.EnabledError",cApp,e.getMessage()));
+            LogBase.getInstance().sendLog(e.toString(),e);
             disableApp(cApp);
         }
 
@@ -279,6 +286,7 @@ public class Server extends ManagerBase {
             }
         }catch (Exception e){
             Log.sendWarn(TranslateOne("Plugin.LoadError",cPlugin,e.getMessage()+" where->"+e.getStackTrace()[0]));
+            LogBase.getInstance().sendLog(e.toString(),e);
             disablePlugin(cPlugin);
             LoadPlugin();
         }
@@ -298,6 +306,7 @@ public class Server extends ManagerBase {
             }
         }catch (Exception e){
             Log.sendWarn(TranslateOne("Plugin.EnableError",cPlugin,e.getMessage()));
+            LogBase.getInstance().sendLog(e.toString(),e);
             disablePlugin(cPlugin);
             EnablePlugin();
         }
@@ -320,6 +329,7 @@ public class Server extends ManagerBase {
             }
         }catch (Exception e){
             Log.sendWarn(TranslateOne("Plugin.EnabledError",cPlugin,e.getMessage()));
+            LogBase.getInstance().sendLog(e.toString(),e);
             disablePlugin(cPlugin);
             EnabledPlugin();
         }
@@ -357,6 +367,7 @@ public class Server extends ManagerBase {
                if (!newPage || !new404) Log.sendError("Can not init Server",14);
             } catch (IOException e) {
                 Log.sendWarn("Can not create 404 file");
+                LogBase.getInstance().sendLog(e.toString(),e);
             }
         }
     }

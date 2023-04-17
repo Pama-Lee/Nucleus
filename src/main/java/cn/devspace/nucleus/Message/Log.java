@@ -1,5 +1,6 @@
 package cn.devspace.nucleus.Message;
 
+import cn.devspace.nucleus.Manager.Log.LogBase;
 import cn.devspace.nucleus.Server.Server;
 import org.fusesource.jansi.AnsiConsole;
 
@@ -13,31 +14,36 @@ public class Log extends MessageBase {
     public static void AppStart(String AppName) {
         AnsiConsole.systemInstall(); 
         System.out.print(BaseFormat(METHOD_APP, AppName));
-        AnsiConsole.systemUninstall(); 
+        AnsiConsole.systemUninstall();
+        LogBase.getInstance().sendLog("App " + AppName + " started.");
     }
 
     public static void sendLog(String Message) {
         AnsiConsole.systemInstall(); 
         System.out.print(BaseFormat(METHOD_LOG, Message));
-        AnsiConsole.systemUninstall(); 
+        AnsiConsole.systemUninstall();
+        LogBase.getInstance().sendLog(Message);
     }
 
     public static void sendAppMessage(String App, String Message) {
         AnsiConsole.systemInstall(); 
         plugin = App;
         System.out.print(BaseFormat(METHOD_APPMESSAGE, Message));
-        AnsiConsole.systemUninstall(); 
+        AnsiConsole.systemUninstall();
+        LogBase.getInstance().sendLog("[" + App + "] " + Message);
     }
 
     public static void sendWarn(String Message) {
         AnsiConsole.systemInstall(); 
         System.out.print(BaseFormat(METHOD_WARN, Message));
-        AnsiConsole.systemUninstall(); 
+        AnsiConsole.systemUninstall();
+        LogBase.getInstance().sendLog(Message);
     }
 
     public static void sendError(String Message, int Code) {
         System.out.print(BaseFormat(METHOD_ERROR, Message));
         Server.Shutdown(Code);
+        LogBase.getInstance().sendLog(Message);
     }
 
     public static String BaseFormat(String METHOD, String Message) {

@@ -68,6 +68,7 @@ public class PluginManager {
                     return new PluginDataTransfer("Method ["+methodName+"] Not Found");
 
                 } catch (Exception e) {
+                    e.printStackTrace();
                     return new PluginDataTransfer("Target Method has an error:"+e.getMessage());
                 }
             }
