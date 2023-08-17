@@ -81,7 +81,7 @@ public class DataBase{
         // 获取数据库
         SettingManager settingManager = new SettingManager();
         Map<String,String> map = settingManager.getMapSetting("DataBase");
-        String[] params = {"database","port","username","password"};
+        String[] params = {"database","port","username","password","host"};
         if (!Unit.checkParams(map,params)){
             Log.sendWarn("未配置完成数据源");
             return null;
@@ -90,8 +90,9 @@ public class DataBase{
         try {
             Properties prop;
             if (properties == null){
+
                 prop = new Properties();
-                prop.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:"+map.get("port")+"/"+map.get("database")+"?characterEncoding=utf-8");
+                prop.setProperty("hibernate.connection.url", "jdbc:mysql://"+map.get("host")+":"+map.get("port")+"/"+map.get("database")+"?characterEncoding=utf-8");
                 prop.setProperty("hibernate.connection.username", map.get("username"));
                 prop.setProperty("hibernate.connection.password", map.get("password"));
                 prop.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
